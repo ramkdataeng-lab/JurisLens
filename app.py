@@ -14,22 +14,27 @@ def load_secrets():
 load_secrets()
 
 # Validation Check
+# Validation Check
 api_key = os.getenv("OPENAI_API_KEY")
 
-if not api_key:
-    # FALLBACK: Allow manual entry in Sidebar
-    st.sidebar.warning("⚠️ API Key not found in Secrets")
-    api_key_input = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
+# Strict Validation: Must start with "sk-" and be > 20 chars
+is_valid_key = api_key and api_key.startswith("sk-") and len(api_key) > 20
+
+if not is_valid_key:
+    # FALLBACK: Force manual entry in Sidebar
+    st.sidebar.warning("⚠️ API Key missing or invalid (must start with 'sk-')")
+    api_key_input = st.sidebar.text_input("Enter OpenAI API Key:", type="password", key="api_key_manual")
     if api_key_input:
         os.environ["OPENAI_API_KEY"] = api_key_input
         api_key = api_key_input
-        st.sidebar.success("Key loaded manually!")
+        st.sidebar.success("Key loaded manually! Please wait...")
+        st.experimental_rerun() # Force reload with new key
     else:
-        st.error("🚨 OPENAI_API_KEY is missing! Please add it to Streamlit Secrets or Sidebar.")
+        st.error("🚨 OPENAI_API_KEY is required to run JurisLens.")
         st.stop()
 else:
     # DEBUG: Show first 5 chars to verify it's loaded
-    st.sidebar.success(f"API Key Loaded: {api_key[:5]}... ({len(api_key)} chars)")
+    st.sidebar.success(f"Key Loaded: {api_key[:5]}... ({len(api_key)} chars)")
 
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
