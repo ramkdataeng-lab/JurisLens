@@ -1,5 +1,13 @@
 import os
 import streamlit as st
+
+# LOAD SECRETS INTO OS.ENVIRON IMMEDIATELY
+# This ensures tools and other modules can find keys via os.getenv()
+if hasattr(st, "secrets"):
+    for key, value in st.secrets.items():
+        if key not in os.environ:
+            os.environ[key] = str(value)
+
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
 # Flexible Agent Import for Streamlit Cloud Compatibility
