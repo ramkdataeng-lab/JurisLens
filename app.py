@@ -1,11 +1,11 @@
 import os
 import streamlit as st
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.tools import Tool
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
-from langchain.schema import SystemMessage
-from langchain.callbacks import StreamlitCallbackHandler
+from langchain_core.messages import SystemMessage
+from langchain_community.callbacks import StreamlitCallbackHandler
 
 # Import tools
 from tools.regulation_search import search_regulations_tool

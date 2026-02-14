@@ -1,9 +1,10 @@
 
 streamlit
 langchain
-langchain-core
-langchain-community
-langchain-openai
+langchain_openai
+langchain_elasticsearch
+langchain_community
+langchain_core
 elasticsearch
 pypdf
 python-dotenv

@@ -1,7 +1,7 @@
 
 import os
-from langchain.vectorstores import ElasticsearchStore
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_elasticsearch import ElasticsearchStore
+from langchain_openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
