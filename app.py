@@ -97,6 +97,10 @@ with st.sidebar:
                 import tempfile
                 from ingest import ingest_pdf
                 
+                # Initialize session state for tracking indexed files if not exists
+                if "indexed_files" not in st.session_state:
+                    st.session_state.indexed_files = set()
+
                 with st.status("Processing Documents...", expanded=True) as status:
                     total_docs = 0
                     for uploaded_file in uploaded_files:
@@ -111,13 +115,22 @@ with st.sidebar:
                             # Ingest
                             ingest_pdf(tmp_path)
                             total_docs += 1
+                            st.session_state.indexed_files.add(uploaded_file.name)
                         except Exception as e:
                             st.error(f"Error processing {uploaded_file.name}: {e}")
                         finally:
                             # Cleanup temp file
-                            os.remove(tmp_path)
+                            if os.path.exists(tmp_path):
+                                os.remove(tmp_path)
                             
                     status.update(label=f"✅ Indexed {total_docs} Documents!", state="complete", expanded=False)
+        
+        # Display Indexed Files List
+        if "indexed_files" in st.session_state and st.session_state.indexed_files:
+            st.markdown("---")
+            st.markdown("**🗂️ Indexed Documents:**")
+            for filename in st.session_state.indexed_files:
+                st.caption(f"✅ {filename}")
 
     st.markdown("---")
     
