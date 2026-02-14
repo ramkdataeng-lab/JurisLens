@@ -4,11 +4,10 @@ import streamlit as st
 # LOAD SECRETS INTO OS.ENVIRON ROBUSTLY
 def load_secrets():
     if hasattr(st, "secrets"):
-        # Check top-level secrets
         for key, value in st.secrets.items():
             if isinstance(value, str):
                 os.environ[key] = value
-            elif isinstance(value, dict): # Handle [sections] in TOML
+            elif isinstance(value, dict):
                 for subkey, subvalue in value.items():
                      os.environ[subkey] = str(subvalue)
 
@@ -16,9 +15,18 @@ load_secrets()
 
 # Validation Check
 api_key = os.getenv("OPENAI_API_KEY")
+
 if not api_key:
-    st.error("🚨 OPENAI_API_KEY is missing! Please add it to Streamlit Secrets.")
-    st.stop()
+    # FALLBACK: Allow manual entry in Sidebar
+    st.sidebar.warning("⚠️ API Key not found in Secrets")
+    api_key_input = st.sidebar.text_input("Enter OpenAI API Key:", type="password")
+    if api_key_input:
+        os.environ["OPENAI_API_KEY"] = api_key_input
+        api_key = api_key_input
+        st.sidebar.success("Key loaded manually!")
+    else:
+        st.error("🚨 OPENAI_API_KEY is missing! Please add it to Streamlit Secrets or Sidebar.")
+        st.stop()
 else:
     # DEBUG: Show first 5 chars to verify it's loaded
     st.sidebar.success(f"API Key Loaded: {api_key[:5]}... ({len(api_key)} chars)")
