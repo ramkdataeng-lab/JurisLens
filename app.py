@@ -76,6 +76,7 @@ st.markdown("""
 
 # --- SIDEBAR ---
 with st.sidebar:
+    st.caption("v1.5 - Cache Buster Edition")
     st.image("images/logo.png", use_column_width=True)
     st.markdown("### 🏛️ Autonomous Compliance Agent")
     st.markdown("---")
@@ -97,7 +98,7 @@ with st.sidebar:
 
 # --- AGENT SETUP ---
 @st.cache_resource
-def setup_agent(openai_api_key):
+def setup_agent_v2(openai_api_key):
     # Pass key explicitly to avoid cache staleness
     tools = [search_regulations_tool, calculate_risk_tool]
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
@@ -139,7 +140,7 @@ if prompt := st.chat_input():
         # The key to visibility: StreamlitCallbackHandler
         st_callback = StreamlitCallbackHandler(st.container())
         
-        agent_executor = setup_agent(api_key)
+        agent_executor = setup_agent_v2(api_key)
         if agent_executor:
             try:
                 response = agent_executor.run(prompt, callbacks=[st_callback])
