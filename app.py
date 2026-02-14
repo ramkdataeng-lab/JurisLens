@@ -36,8 +36,8 @@ if not is_valid_key:
         st.error("🚨 OPENAI_API_KEY is required to run JurisLens.")
         st.stop()
 else:
-    # DEBUG: Show first 5 chars to verify it's loaded
-    st.sidebar.success(f"Key Loaded: {api_key[:5]}... ({len(api_key)} chars)")
+    # Key is valid, proceed silently
+    pass
 
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
@@ -81,25 +81,53 @@ st.markdown("""
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.caption("v1.5 - Cache Buster Edition")
     st.image("images/logo.png", use_column_width=True)
     st.markdown("### 🏛️ Autonomous Compliance Agent")
     st.markdown("---")
     
-    st.header("1. Upload Regulations")
-    uploaded_files = st.file_uploader("Upload PDF Documents", accept_multiple_files=True, type=['pdf'])
-    
-    if st.button("Process & Index Knowledge Base"):
-        with st.status("Processing Documents...", expanded=True) as status:
-            st.write("📄 Parsing PDFs...")
-            # Simulated ingest for demo speed (calls real ingest in prod)
-            from ingest import ingest_pdf
-            st.write("🧩 Chunking & Embedding...")
-            st.write("💾 Indexing to Elasticsearch...")
-            status.update(label="✅ Knowledge Base Updated!", state="complete", expanded=False)
+    # Knowledge Base Section
+    with st.expander("📚 Knowledge Base", expanded=True):
+        st.markdown("**Upload Regulations**")
+        uploaded_files = st.file_uploader("Upload PDF", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
+        
+        if st.button("Process & Index", type="primary", use_container_width=True):
+            if not uploaded_files:
+                st.warning("Please upload files first.")
+            else:
+                import tempfile
+                from ingest import ingest_pdf
+                
+                with st.status("Processing Documents...", expanded=True) as status:
+                    total_docs = 0
+                    for uploaded_file in uploaded_files:
+                        st.write(f"📄 Processing: {uploaded_file.name}...")
+                        
+                        # Save to temp file because PyPDFLoader needs a path
+                        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+                            tmp_file.write(uploaded_file.getvalue())
+                            tmp_path = tmp_file.name
+                        
+                        try:
+                            # Ingest
+                            ingest_pdf(tmp_path)
+                            total_docs += 1
+                        except Exception as e:
+                            st.error(f"Error processing {uploaded_file.name}: {e}")
+                        finally:
+                            # Cleanup temp file
+                            os.remove(tmp_path)
+                            
+                    status.update(label=f"✅ Indexed {total_docs} Documents!", state="complete", expanded=False)
 
     st.markdown("---")
-    st.info("💡 **Tip:** Ask about specific regulations or calculate risk for transactions.")
+    
+    # 2. Controls
+    if st.button("🧹 Clear Chat History", use_container_width=True):
+        st.session_state.messages = []
+        try:
+            st.rerun()
+        except AttributeError:
+            st.experimental_rerun()
 
 # --- AGENT SETUP ---
 @st.cache_resource
@@ -123,8 +151,8 @@ def setup_agent_v2(openai_api_key):
     )
 
 # --- CHAT INTERFACE ---
-st.title("JurisLens AI (Updated)")
-st.caption("🚀 Powered by Elastic Search & OpenAI GPT-4")
+st.title("JurisLens AI")
+st.markdown("Your autonomous compliance assistant.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
