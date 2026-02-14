@@ -97,12 +97,12 @@ with st.sidebar:
 
 # --- AGENT SETUP ---
 @st.cache_resource
-def setup_agent():
+def setup_agent(openai_api_key):
+    # Pass key explicitly to avoid cache staleness
     tools = [search_regulations_tool, calculate_risk_tool]
-    llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=os.getenv("OPENAI_API_KEY"))
+    llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
     
-    # Modern Agent Construction
-    # Get the prompt to use - you can modify this!
+    # Modern Agent Construction using hub prompt
     prompt = hub.pull("hwchase17/openai-functions-agent")
     
     agent = create_tool_calling_agent(llm, tools, prompt)
@@ -139,7 +139,7 @@ if prompt := st.chat_input():
         # The key to visibility: StreamlitCallbackHandler
         st_callback = StreamlitCallbackHandler(st.container())
         
-        agent_executor = setup_agent()
+        agent_executor = setup_agent(api_key)
         if agent_executor:
             try:
                 response = agent_executor.run(prompt, callbacks=[st_callback])
