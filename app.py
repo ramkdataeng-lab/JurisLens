@@ -107,7 +107,7 @@ def setup_agent_v2(openai_api_key):
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
     
     # Modern Agent Construction using hub prompt
-    prompt = hub.pull("hwchase17/openai-functions-agent")
+    prompt = hub.pull("hwchase17/openai-tools-agent")
     
     agent = create_tool_calling_agent(llm, tools, prompt)
     
