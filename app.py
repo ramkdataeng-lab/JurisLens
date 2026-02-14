@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
-from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain import hub
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import SystemMessage
@@ -64,7 +64,7 @@ def setup_agent():
     # Get the prompt to use - you can modify this!
     prompt = hub.pull("hwchase17/openai-functions-agent")
     
-    agent = create_openai_functions_agent(llm, tools, prompt)
+    agent = create_tool_calling_agent(llm, tools, prompt)
     
     return AgentExecutor(
         agent=agent, 
