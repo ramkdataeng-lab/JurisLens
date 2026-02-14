@@ -2,7 +2,12 @@ import os
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
-from langchain.agents import AgentExecutor, create_tool_calling_agent
+# Flexible Agent Import for Streamlit Cloud Compatibility
+try:
+    from langchain.agents import AgentExecutor, create_tool_calling_agent
+except ImportError:
+    from langchain.agents import AgentExecutor, create_openai_functions_agent as create_tool_calling_agent
+
 from langchain import hub
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import SystemMessage
