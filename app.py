@@ -131,6 +131,14 @@ with st.sidebar:
             st.markdown("**🗂️ Indexed Documents:**")
             for filename in st.session_state.indexed_files:
                 st.caption(f"✅ {filename}")
+    
+    st.markdown("---")
+    st.info("""
+    **⚡ Engine: Elasticsearch RAG**
+    1. **Ingest:** PDFs are split into chunks.
+    2. **Embed:** Text becomes vectors.
+    3. **Index:** Stored in **Elasticsearch**, enabling instant semantic retrieval.
+    """)
 
     st.markdown("---")
     
