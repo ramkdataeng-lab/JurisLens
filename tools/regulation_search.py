@@ -1,4 +1,5 @@
 
+import os
 from langchain.vectorstores import ElasticsearchStore
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
