@@ -1,0 +1,9 @@
+
+streamlit
+langchain
+langchain_openai
+elasticsearch
+pypdf
+python-dotenv
+tiktoken
+click
