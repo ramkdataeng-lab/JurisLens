@@ -45,8 +45,10 @@ from langchain_core.tools import Tool
 try:
     from langchain.agents import AgentExecutor, create_tool_calling_agent
 except ImportError:
-    from langchain.agents import AgentExecutor, create_openai_functions_agent as create_tool_calling_agent
+    pass
 
+# FALLBACK TO RELIABLE LEGACY AGENT
+from langchain.agents import initialize_agent, AgentType
 from langchain import hub
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import SystemMessage
@@ -106,16 +108,18 @@ def setup_agent_v2(openai_api_key):
     tools = [search_regulations_tool, calculate_risk_tool]
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
     
-    # Modern Agent Construction using hub prompt
-    prompt = hub.pull("hwchase17/openai-tools-agent")
-    
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    
-    return AgentExecutor(
-        agent=agent, 
-        tools=tools, 
+    # Use the High-Level "initialize_agent" -> It handles everything automatically
+    # This is much more stable on Streamlit Cloud than manual Prompt+AgentExecutor construction
+    return initialize_agent(
+        tools=tools,
+        llm=llm,
+        agent=AgentType.OPENAI_FUNCTIONS,
         verbose=True,
-        return_intermediate_steps=True
+        max_iterations=5,
+        early_stopping_method="generate",
+        agent_kwargs={
+            "system_message": SystemMessage(content="You are JurisLens, an AI compliance expert. Use provided tools to find regulations and calculate risks. ALWAYS explain your reasoning.")
+        }
     )
 
 # --- CHAT INTERFACE ---
