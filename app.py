@@ -116,7 +116,7 @@ def setup_agent_v2(openai_api_key):
     )
 
 # --- CHAT INTERFACE ---
-st.title("JurisLens AI")
+st.title("JurisLens AI (Updated)")
 st.caption("🚀 Powered by Elastic Search & OpenAI GPT-4")
 
 if "messages" not in st.session_state:
