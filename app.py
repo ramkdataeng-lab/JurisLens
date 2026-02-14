@@ -2,7 +2,8 @@ import os
 import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
-from langchain.agents import initialize_agent, AgentType
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain import hub
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import SystemMessage
 from langchain_community.callbacks import StreamlitCallbackHandler
@@ -59,15 +60,17 @@ def setup_agent():
     tools = [search_regulations_tool, calculate_risk_tool]
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=os.getenv("OPENAI_API_KEY"))
     
-    return initialize_agent(
-        tools, 
-        llm, 
-        agent=AgentType.OPENAI_FUNCTIONS, 
+    # Modern Agent Construction
+    # Get the prompt to use - you can modify this!
+    prompt = hub.pull("hwchase17/openai-functions-agent")
+    
+    agent = create_openai_functions_agent(llm, tools, prompt)
+    
+    return AgentExecutor(
+        agent=agent, 
+        tools=tools, 
         verbose=True,
-        memory=ConversationBufferMemory(memory_key="chat_history", return_messages=True),
-        agent_kwargs={
-            "system_message": SystemMessage(content="You are JurisLens, an elite legal AI. Use the 'RegulationSearch' tool to find laws. Use 'RiskCalculator' for financial risk methodology. Always cite your sources.")
-        }
+        return_intermediate_steps=True
     )
 
 # --- CHAT INTERFACE ---
