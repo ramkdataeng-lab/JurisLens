@@ -134,10 +134,11 @@ with st.sidebar:
     
     st.markdown("---")
     st.info("""
-    **⚡ Engine: Elasticsearch RAG**
-    1. **Ingest:** PDFs are split into chunks.
-    2. **Embed:** Text becomes vectors.
-    3. **Index:** Stored in **Elasticsearch**, enabling instant semantic retrieval.
+    **⚡ Why Elasticsearch?**
+    Unlike standard chatbots limited by context size:
+    *   **Scale:** Index **thousands** of PDFs, not just one.
+    *   **Precision:** Find exact regulations in milliseconds.
+    *   **Privacy:** Data stays in your private vectors.
     """)
 
     st.markdown("---")
