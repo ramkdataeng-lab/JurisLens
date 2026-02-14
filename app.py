@@ -15,9 +15,13 @@ def load_secrets():
 load_secrets()
 
 # Validation Check
-if not os.getenv("OPENAI_API_KEY"):
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
     st.error("🚨 OPENAI_API_KEY is missing! Please add it to Streamlit Secrets.")
     st.stop()
+else:
+    # DEBUG: Show first 5 chars to verify it's loaded
+    st.sidebar.success(f"API Key Loaded: {api_key[:5]}... ({len(api_key)} chars)")
 
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
