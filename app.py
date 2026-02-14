@@ -1,12 +1,23 @@
 import os
 import streamlit as st
 
-# LOAD SECRETS INTO OS.ENVIRON IMMEDIATELY
-# This ensures tools and other modules can find keys via os.getenv()
-if hasattr(st, "secrets"):
-    for key, value in st.secrets.items():
-        if key not in os.environ:
-            os.environ[key] = str(value)
+# LOAD SECRETS INTO OS.ENVIRON ROBUSTLY
+def load_secrets():
+    if hasattr(st, "secrets"):
+        # Check top-level secrets
+        for key, value in st.secrets.items():
+            if isinstance(value, str):
+                os.environ[key] = value
+            elif isinstance(value, dict): # Handle [sections] in TOML
+                for subkey, subvalue in value.items():
+                     os.environ[subkey] = str(subvalue)
+
+load_secrets()
+
+# Validation Check
+if not os.getenv("OPENAI_API_KEY"):
+    st.error("🚨 OPENAI_API_KEY is missing! Please add it to Streamlit Secrets.")
+    st.stop()
 
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import Tool
