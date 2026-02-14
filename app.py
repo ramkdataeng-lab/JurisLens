@@ -28,7 +28,10 @@ if not is_valid_key:
         os.environ["OPENAI_API_KEY"] = api_key_input
         api_key = api_key_input
         st.sidebar.success("Key loaded manually! Please wait...")
-        st.experimental_rerun() # Force reload with new key
+        try:
+            st.rerun() # Modern Streamlit
+        except AttributeError:
+            st.experimental_rerun() # Legacy Fallback
     else:
         st.error("🚨 OPENAI_API_KEY is required to run JurisLens.")
         st.stop()
