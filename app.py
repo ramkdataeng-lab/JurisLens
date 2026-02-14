@@ -19,6 +19,7 @@ st.markdown("> **Navigate Regulations with Precision.** Powered by Elastic AI Se
 
 # --- SIDEBAR: Configuration & Setup ---
 with st.sidebar:
+    st.image("images/logo.png", use_column_width=True)
     st.header("Upload Regulations")
     uploaded_files = st.file_uploader("Upload PDF Documents", accept_multiple_files=True, type=['pdf'])
     

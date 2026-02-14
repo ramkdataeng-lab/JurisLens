@@ -1,8 +1,6 @@
 # 🏛️ Elastic JurisLens
 
-> **"Seeing through the complexity of compliance."**
-
-**JurisLens** is an AI-powered legal and compliance agent built for the **Elasticsearch Agent Builder Hackathon 2026**.
+![JurisLens Logo](./images/logo.png)
 
 ## 🚀 The Concept
 Financial regulations and legal statutes are dense, complex, and constantly changing. **JurisLens** acts as an intelligent compliance officer that:
