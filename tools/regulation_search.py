@@ -4,8 +4,8 @@ from langchain_elasticsearch import ElasticsearchStore
 from langchain_openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
-from langchain.tools import Tool, StructuredTool
+from langchain_openai import ChatOpenAI
+from langchain_core.tools import Tool, StructuredTool
 
 ELASTIC_CLOUD_ID = os.getenv("ELASTIC_CLOUD_ID")
 ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY")

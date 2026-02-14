@@ -1,5 +1,5 @@
 
-from langchain.tools import Tool
+from langchain_core.tools import Tool
 
 def calculate_fine_risk(transaction_amount: float, jurisdiction: str) -> str:
     """

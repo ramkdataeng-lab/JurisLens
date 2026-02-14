@@ -5,6 +5,7 @@ langchain_openai
 langchain_elasticsearch
 langchain_community
 langchain_core
+langchain_text_splitters
 elasticsearch
 pypdf
 python-dotenv

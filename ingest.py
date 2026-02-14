@@ -1,9 +1,9 @@
 
 import os
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import ElasticsearchStore
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_elasticsearch import ElasticsearchStore
+from langchain_openai import OpenAIEmbeddings
 
 # Connect to ES Cloud (Or Local)
 ELASTIC_CLOUD_ID = os.getenv("ELASTIC_CLOUD_ID")

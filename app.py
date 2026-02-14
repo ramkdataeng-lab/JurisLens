@@ -1,7 +1,7 @@
 import os
 import streamlit as st
 from langchain_openai import ChatOpenAI
-from langchain.tools import Tool
+from langchain_core.tools import Tool
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import SystemMessage
