@@ -193,7 +193,7 @@ st.markdown("""
 # --- SIDEBAR (MINIMALIST) ---
 with st.sidebar:
     # Small logo to save space
-    st.image("images/logo.png", width=120)
+    st.image("images/logo.png", width=280)
     st.markdown("### ⚡ Elastic RAG  \n<span style='font-size:0.8em;'>🔍 **Mode:** Hybrid (Vector + Keyword)</span>", unsafe_allow_html=True)
     
     # Knowledge Base Section
@@ -261,7 +261,8 @@ with st.sidebar:
         try:
             st.rerun()
         except AttributeError:
-            st.experimental_rerun()
+             # Fallback for older streamlit
+             pass
 
 # --- AGENT SETUP ---
 def setup_agent_v3(openai_api_key):
@@ -457,15 +458,20 @@ with info_col:
     st.markdown("---")
     st.caption("© 2026 JurisLens Inc. | **Privacy Policy**")
     
-# --- HELPER: Architecture Modal ---
-@st.experimental_dialog("JurisLens System Architecture")
-def show_architecture():
-    try:
-        with open("Arc_diagram/architecture_pro.html", "r", encoding='utf-8') as f:
-            html_code = f.read()
-        st.components.v1.html(html_code, height=750, scrolling=True)
-    except Exception as e:
-        st.error(f"Could not load diagram: {e}")
+# --- HELPER: Architecture Modal (Robust) ---
+def show_architecture_content():
+    st.image("Arc_diagram/architecture.png", use_column_width=True, caption="Enterprise Architecture v1.0")
+
+# Check which dialog version is available
+if hasattr(st, "dialog"):
+    show_architecture = st.dialog("JurisLens System Architecture")(show_architecture_content)
+elif hasattr(st, "experimental_dialog"):
+    show_architecture = st.experimental_dialog("JurisLens System Architecture")(show_architecture_content)
+else:
+    # Fallback for older Streamlit versions (just show in expander)
+    def show_architecture():
+        with st.expander("JurisLens System Architecture", expanded=True):
+            show_architecture_content()
 
 # Call the button inside the layout
 with info_col:
