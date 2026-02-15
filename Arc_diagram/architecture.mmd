@@ -1,45 +1,78 @@
 graph TD
-    %% Nodes
-    User((User))
-    UI[Streamlit UI]
-    Agent[JurisLens Agent<br>(LangChain Orchestrator)]
+    %% Theme: Professional Blue/Tech
+    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'edgeLabelBackground':'#ffffff', 'tertiaryColor': '#f1f8e9', 'lineColor': '#1565c0'}}}%%
+
+    %% Actors & Interface
+    User(fa:fa-user User<br>Web Browser)
     
-    ES[(Elasticsearch<br>Vector + Keyword)]
-    Risk[(Internal Risk Ledger<br>SQL/API)]
-    Sanctions[(Global Sanctions List<br>API)]
-    
-    PDF[Policy PDF]
-    LLM[OpenAI GPT-4]
+    subgraph Frontend [Streamlit UI]
+        direction TB
+        UI(fa:fa-laptop Streamlit Dashboard)
+        Upload(fa:fa-file-upload Upload PDF)
+        UI -.-> Upload
+    end
+
+    subgraph DataPipeline [Data Processing & Ingestion Pipeline]
+        direction LR
+        PyScript(fa:fa-python LangChain Script)
+        Chunker(fa:fa-cut Text Chunking)
+        Embedder(fa:fa-brain OpenAI Embeddings)
+        
+        PyScript --> Chunker --> Embedder
+    end
+
+    subgraph Knowledge [Elasticsearch Cloud]
+        direction TB
+        VectorStore[(fa:fa-database Vector Store & RAG)]
+        Index[Index: Regulation Vectors]
+        VectorStore --- Index
+    end
+
+    subgraph Brain [AI Decision Engine]
+        direction TB
+        Agent(fa:fa-robot AI Agent<br>GPT-4 Turbo)
+        Synthesis(fa:fa-pen-fancy Synthesis & Answer Gen)
+    end
+
+    subgraph Tools [Risk Tools & APIs]
+        RiskCalc(fa:fa-calculator RiskCalculator<br>Python Function)
+        SanctionsCheck(fa:fa-ban Sanctions List<br>API Check)
+        
+        subgraph Banking [Core Banking System]
+            TransactionDB[(fa:fa-server Transaction Ledger<br>REST API)]
+        end
+        
+        RiskCalc <-->|GET /transactions?clientId=123| TransactionDB
+    end
 
     %% Relationships
-    User -->|Upload PDF| UI
-    User -->|Ask Question| UI
-    UI -->|Ingest| ES
-    UI -->|Invoke Agent| Agent
+    User ==>|1. Question| UI
+    User ==>|2. Upload PDF| Upload
     
-    Agent -->|Reasoning| LLM
-    
-    subgraph "Retrieval (RAG)"
-        Agent -->|Search Regulations| ES
-        ES -->|Relevant Chunks| Agent
-    end
-    
-    subgraph "Tools (Live Compliance)"
-        Agent -->|Check Ledger Scope| Risk
-        Risk -->|Prior Transaction Data| Agent
-        
-        Agent -->|Check Entity Status| Sanctions
-        Sanctions -->|Watchlist Match| Agent
-    end
-    
-    Agent -->|Final Compliance Decision| UI
-    UI -->|Display w/ Citations| User
+    Upload -->|PDF Stream| PyScript
+    Embedder ==>|3. Index Embeddings| VectorStore
 
-    %% Styling
-    style User fill:#333,stroke:#fff,stroke-width:2px,color:#fff
-    style UI fill:#4B0082,stroke:#fff,stroke-width:2px,color:#fff
-    style Agent fill:#2E8B57,stroke:#fff,stroke-width:2px,color:#fff
-    style ES fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
-    style Risk fill:#CD5C5C,stroke:#333,stroke-width:2px,color:#fff
-    style Sanctions fill:#CD5C5C,stroke:#333,stroke-width:2px,color:#fff
-    style LLM fill:#1E90FF,stroke:#fff,stroke-width:2px,color:#fff
+    UI ==>|4. User Question| Agent
+    
+    Agent <==>|5. Hybrid Search Query| VectorStore
+    VectorStore -.->|Relevant Context| Agent
+
+    Agent <==>|6. Tool Invocation| RiskCalc
+    Agent <==>|7. Tool Invocation| SanctionsCheck
+
+    Agent ==>|8. Final Answer| Synthesis
+    Synthesis ==>|9. Response| UI
+
+    %% Styling to mimic the Blue Theme
+    classDef blue fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef green fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef orange fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef grey fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px;
+    classDef red fill:#ffebee,stroke:#c62828,stroke-width:2px;
+
+    class User,UI,Upload blue;
+    class VectorStore,Index,ES orange;
+    class Agent,Synthesis,Embedder green;
+    class RiskCalc,SanctionsCheck grey;
+    class DataPipeline blue;
+    class TransactionDB red;
