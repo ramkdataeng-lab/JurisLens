@@ -55,14 +55,19 @@ def search_regulations_tool(query: str) -> str:
                 formatted_docs = []
                 for doc, score in docs_and_scores:
                     source = doc.metadata.get('source', 'Unknown')
-                    page_meta = doc.metadata.get('page', 0)
-                    try:
-                        page = int(page_meta) + 1
-                    except:
-                        page = 1
+                    page_meta = doc.metadata.get('page', None)
+                    
+                    citation_part = f"[Source: {source}]"
+                    if page_meta is not None:
+                        try:
+                            # Only add page if it's a valid integer (PDFs usually have 0-indexed pages)
+                            p_num = int(page_meta) + 1
+                            citation_part = f"[Source: {source} (Page {p_num})]"
+                        except:
+                            pass
                     
                     # Elastic scores
-                    formatted_docs.append(f"[Source: {source} (Page {page}) | Relevance: {score:.4f}]\n{doc.page_content}")
+                    formatted_docs.append(f"{citation_part} [Relevance: {score:.4f}]\n{doc.page_content}")
                 elastic_results = "\n\n".join(formatted_docs)
                 
         except Exception as e:
