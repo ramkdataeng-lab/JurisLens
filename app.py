@@ -468,11 +468,11 @@ def show_architecture_content():
             img_bytes = f.read()
         encoded = base64.b64encode(img_bytes).decode()
         
-        # Display with CSS precision
+        # Display with CSS precision - Reduced height to ensure legend visibility
         st.markdown(f"""
         <div style="display: flex; justify-content: center;">
             <img src="data:image/png;base64,{encoded}" 
-                 style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                 style="max-width: 100%; max-height: 65vh; object-fit: contain; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         </div>
         """, unsafe_allow_html=True)
         
@@ -481,9 +481,9 @@ def show_architecture_content():
     
     # Tech Stack Legend
     st.markdown("""
-    <div style="text-align: center; margin-top: 10px; padding: 10px; background-color: #f0f2f6; border-radius: 10px;">
-        <p style="margin:0; font-weight: bold; color: #31333F;">🚀 &nbsp; BUILT WITH &nbsp; 🚀</p>
-        <p style="margin:5px 0 0 0; font-size: 0.9em;">
+    <div style="text-align: center; margin-top: 10px; padding: 8px; background-color: #f0f2f6; border-radius: 10px;">
+        <p style="margin:0; font-weight: bold; color: #31333F; font-size: 0.9em;">🚀 &nbsp; BUILT WITH &nbsp; 🚀</p>
+        <p style="margin:5px 0 0 0; font-size: 0.8em;">
             <span style="color:#0077cc;"><b>Streamlit</b></span> (UI) &nbsp;•&nbsp;
             <span style="color:#F5A623;"><b>Elasticsearch</b></span> (Vector Store) &nbsp;•&nbsp;
             <span style="color:#00A67E;"><b>LangChain</b></span> (Orchestration) &nbsp;•&nbsp;
