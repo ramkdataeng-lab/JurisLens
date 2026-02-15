@@ -265,9 +265,9 @@ with chat_col:
                 st.session_state.messages.append({"role": "assistant", "content": response})
                 
                 # Feedback for current answer
-                col1, col2, col3 = st.columns([1, 1, 8])
-                with col1: st.button("👍", key="curr_up", help="Helpful")
-                with col2: st.button("👎", key="curr_down", help="Not Helpful")
+                col_spacer, col_up, col_down = st.columns([0.85, 0.08, 0.07])
+                with col_up: st.button("👍", key="curr_up", help="Helpful")
+                with col_down: st.button("👎", key="curr_down", help="Not Helpful")
 
     st.markdown("### 💬 Conversation History")
     
@@ -299,11 +299,12 @@ with chat_col:
                         final_text = enrich_response(ai_msg["content"])
                         st.markdown(final_text)
                         
-                        # Feedback Buttons (Small)
-                        col1, col2, col3 = st.columns([1, 1, 8])
-                        with col1:
+                        # Feedback Buttons (Right Aligned)
+                        # We use a huge spacer to push them right
+                        c_space, c_up, c_down = st.columns([0.85, 0.08, 0.07])
+                        with c_up:
                             st.button("👍", key=f"up_{i}", help="Helpful")
-                        with col2:
+                        with c_down:
                             st.button("👎", key=f"down_{i}", help="Not Helpful")
                             
                 st.markdown("---")
