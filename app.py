@@ -79,16 +79,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- SIDEBAR ---
+# --- SIDEBAR (MINIMALIST) ---
 with st.sidebar:
     st.image("images/logo.png", use_column_width=True)
-    st.markdown("### 🏛️ Autonomous Compliance Agent")
+    st.markdown("### 🏛️ Compliance Agent")
     st.markdown("---")
     
     # Knowledge Base Section
     with st.expander("📚 Knowledge Base", expanded=True):
-        st.markdown("**Upload Regulations**")
-        uploaded_files = st.file_uploader("Upload PDF", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
+        uploaded_files = st.file_uploader("Upload Regulations (PDF)", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
         
         if st.button("Process & Index", type="primary", use_container_width=True):
             if not uploaded_files:
@@ -101,12 +100,10 @@ with st.sidebar:
                 if "indexed_files" not in st.session_state:
                     st.session_state.indexed_files = set()
 
-                with st.status("Processing Documents...", expanded=True) as status:
+                with st.status("Processing...", expanded=True) as status:
                     total_docs = 0
                     for uploaded_file in uploaded_files:
-                        st.write(f"📄 Processing: {uploaded_file.name}...")
-                        
-                        # Save to temp file because PyPDFLoader needs a path
+                        # Save to temp file
                         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
                             tmp_file.write(uploaded_file.getvalue())
                             tmp_path = tmp_file.name
@@ -117,34 +114,15 @@ with st.sidebar:
                             total_docs += 1
                             st.session_state.indexed_files.add(uploaded_file.name)
                         except Exception as e:
-                            st.error(f"Error processing {uploaded_file.name}: {e}")
+                            st.error(f"Error: {e}")
                         finally:
-                            # Cleanup temp file
                             if os.path.exists(tmp_path):
                                 os.remove(tmp_path)
                             
-                    status.update(label=f"✅ Indexed {total_docs} Documents!", state="complete", expanded=False)
-        
-        # Display Indexed Files List
-        if "indexed_files" in st.session_state and st.session_state.indexed_files:
-            st.markdown("---")
-            st.markdown("**🗂️ Indexed Documents:**")
-            for filename in st.session_state.indexed_files:
-                st.caption(f"✅ {filename}")
-    
-    st.markdown("---")
-    st.info("""
-    **⚡ Why Elasticsearch?**
-    Unlike standard chatbots limited by context size:
-    *   **Scale:** Index **thousands** of PDFs, not just one.
-    *   **Precision:** Find exact regulations in milliseconds.
-    *   **Privacy:** Data stays in your private vectors.
-    """)
+                    status.update(label=f"✅ Indexed {total_docs} Docs!", state="complete", expanded=False)
 
     st.markdown("---")
-    
-    # 2. Controls
-    if st.button("🧹 Clear Chat History", use_container_width=True):
+    if st.button("🧹 Clear Chat", use_container_width=True):
         st.session_state.messages = []
         try:
             st.rerun()
@@ -159,7 +137,6 @@ def setup_agent_v2(openai_api_key):
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
     
     # Use the High-Level "initialize_agent" -> It handles everything automatically
-    # This is much more stable on Streamlit Cloud than manual Prompt+AgentExecutor construction
     return initialize_agent(
         tools=tools,
         llm=llm,
@@ -172,41 +149,69 @@ def setup_agent_v2(openai_api_key):
         }
     )
 
-# --- CHAT INTERFACE ---
-st.title("JurisLens AI")
-st.markdown("Your autonomous compliance assistant.")
+# --- MAIN LAYOUT (2 COLUMNS) ---
+# Create a 2-column layout: [Chat Area (75%), Info Panel (25%)]
+chat_col, info_col = st.columns([0.75, 0.25], gap="large")
 
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "assistant", "content": "Hello! I am **JurisLens**. I can search through thousands of regulations or calculate compliance risk.\n\nTry asking: \n- *'What are the AML requirements for crypto in Singapore?'*\n- *'Calculate the risk for a $50k transfer to France.'*"}
-    ]
+with chat_col:
+    st.title("JurisLens AI")
+    st.markdown("Your autonomous compliance assistant.")
 
-# Display History
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.chat_message("user", avatar="👤").write(msg["content"])
-    else:
-        st.chat_message("assistant", avatar="images/logo.png").write(msg["content"])
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": "Hello! I am **JurisLens**. I can search through thousands of regulations or calculate compliance risk.\n\nTry asking: \n- *'What are the AML requirements for crypto in Singapore?'*\n- *'Calculate the risk for a $50k transfer to France.'*"}
+        ]
 
-# Handle Input
-if prompt := st.chat_input():
-    st.chat_message("user", avatar="👤").write(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Display History within the Chat Column
+    for msg in st.session_state.messages:
+        if msg["role"] == "user":
+            st.chat_message("user", avatar="👤").write(msg["content"])
+        else:
+            st.chat_message("assistant", avatar="images/logo.png").write(msg["content"])
 
-    with st.chat_message("assistant", avatar="images/logo.png"):
-        # Cool visualization of the thought process
-        with st.status("🤖 AI Processing...", expanded=True) as status:
-            st_callback = StreamlitCallbackHandler(st.container())
-            agent_executor = setup_agent_v2(api_key)
-            
-            if agent_executor:
-                try:
-                    response = agent_executor.run(prompt, callbacks=[st_callback])
-                    st.write(response) # Show final answer inside expander
-                    st.session_state.messages.append({"role": "assistant", "content": response})
-                    status.update(label="✅ Complete!", state="complete", expanded=False)
-                except Exception as e:
-                    st.error(f"Error: {e}")
-                    status.update(label="❌ Error", state="error", expanded=True)
-            else:
-                st.error("⚠️ Agent not initialized.")
+    # Handle Input
+    if prompt := st.chat_input():
+        st.chat_message("user", avatar="👤").write(prompt)
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
+        with st.chat_message("assistant", avatar="images/logo.png"):
+            # Cool visualization of the thought process
+            with st.status("🤖 AI Processing...", expanded=True) as status:
+                st_callback = StreamlitCallbackHandler(st.container())
+                agent_executor = setup_agent_v2(api_key)
+                
+                if agent_executor:
+                    try:
+                        response = agent_executor.run(prompt, callbacks=[st_callback])
+                        st.write(response) # Show final answer inside expander
+                        st.session_state.messages.append({"role": "assistant", "content": response})
+                        status.update(label="✅ Complete!", state="complete", expanded=False)
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+                        status.update(label="❌ Error", state="error", expanded=True)
+                else:
+                    st.error("⚠️ Agent not initialized.")
+
+# --- RIGHT INFO PANEL ---
+with info_col:
+    st.markdown("### ⚡ Engine")
+    st.info("""
+    **Search:** Elasticsearch Vector Store
+    **Model:** GPT-4 Turbo
+    **Framework:** LangChain Agents
+    """)
+    
+    st.markdown("### 🏆 Why Elastic?")
+    st.caption("""
+    Unlike standard chatbots, JurisLens is **grounded**:
+    1. **Ingest:** PDFs → Vectors.
+    2. **Index:** Search millions of docs in ms.
+    3. **Retrieve:** Facts > Hallucinations.
+    """)
+    
+    # Display Indexed Files List Here
+    if "indexed_files" in st.session_state and st.session_state.indexed_files:
+        st.markdown("---")
+        st.markdown("### 🗂️ Active Docs")
+        for filename in st.session_state.indexed_files:
+            st.success(f"📄 {filename}")

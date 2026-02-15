@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens - Hackathon Submission</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .header-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            border-radius: 12px;
+        }
+
+        .section-title {
+            color: #4f46e5;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            color: #334155;
+        }
+
+        .highlight-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid #6366f1;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header-bg text-center">
+        <div class="container">
+            <h1 class="display-4 fw-bold">🏛️ JurisLens</h1>
+            <p class="lead">Autonomous Compliance Agent powered by Elasticsearch & LangChain</p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- 1. Description -->
+        <div class="card p-4">
+            <h2 class="section-title">1. Project Description</h2>
+
+            <h3>The Problem</h3>
+            <p>Global financial institutions face billions of dollars in fines annually due to non-compliance with
+                Anti-Money Laundering (AML) and Know Your Customer (KYC) regulations. These regulations are vast,
+                complex, and constantly changing. Compliance officers spend countless hours manually searching through
+                thousands of PDF pages, often missing critical nuances. Standard chatbots fail here because they
+                hallucinate laws or cannot access private, up-to-the-measure regulatory documents.</p>
+
+            <h3>The Solution</h3>
+            <p><strong>JurisLens</strong> is an autonomous agent designed to bridge the gap between legal rigor and AI
+                speed. Unlike a passive chatbot, it is equipped with specialized tools:</p>
+            <ul>
+                <li><strong>Search & Retrieve:</strong> Actively queries a secure Knowledge Base using Semantic Search
+                    to find exact legal clauses.</li>
+                <li><strong>Calculate Risk:</strong> Switches modes to perform deterministic financial risk assessments.
+                </li>
+                <li><strong>Cite Sources:</strong> Provides answers grounded in actual text, reducing liability.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>Architecture & Tech Stack:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>Elasticsearch Vector Store:</strong> The semantic "brain" storing thousands of
+                        regulatory embeddings.</li>
+                    <li><strong>LangChain Agents:</strong> Uses <code>OpenAI Functions Agent</code> for intelligent tool
+                        routing.</li>
+                    <li><strong>RAG Pipeline:</strong> Automated ingestion (Chunking -> Embedding -> Indexing).</li>
+                </ul>
+            </div>
+
+            <h3>3 Features We Liked & Challenges</h3>
+            <ol>
+                <li><strong>Elasticsearch Speed:</strong> The retrieval speed for vector search was phenomenal. Even
+                    with dense legal texts, Elastic returned relevant chunks in milliseconds.</li>
+                <li><strong>Hybrid Tool Use:</strong> We loved how the Agent seamlessly combined PDF search data with a
+                    Python-based risk calculator in a single conversation turn.</li>
+                <li><strong>Challenge (Solved):</strong> Prompt Engineering for Tools. Getting the agent to consistently
+                    call the <code>RiskCalculator</code> with the correct JSON schema was tricky, but moving to
+                    Pydantic-based structured tools solved it.</li>
+            </ol>
+        </div>
+
+        <!-- 2. Demo Video -->
+        <div class="card p-4">
+            <h2 class="section-title">2. Demonstration Video</h2>
+            <div class="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center text-muted">
+                <span>[ Paste YouTube / Loom Link Here ]</span>
+            </div>
+        </div>
+
+        <!-- 3. Repository -->
+        <div class="card p-4">
+            <h2 class="section-title">3. Code Repository</h2>
+            <p>
+                <a href="https://github.com/ramkdataeng-lab/JurisLens" target="_blank" class="btn btn-outline-primary">
+                    View on GitHub (ramkdataeng-lab/JurisLens)
+                </a>
+            </p>
+        </div>
+
+        <!-- 4. Social Post -->
+        <div class="card p-4">
+            <h2 class="section-title">4. Social Media Post</h2>
+            <div class="bg-light p-3 rounded fst-italic">
+                "Just built JurisLens for the @elastic AI Hackathon! 🚀 It's an autonomous agent that uses
+                #Elasticsearch vector search to navigate complex financial regulations in seconds. Goodbye manual
+                compliance checks! #AI #RAG #LangChain #Python"
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="text-center py-4 text-muted">
+        <small>&copy; 2026 JurisLens Team. Built for the Elastic AI Assistant Hackathon.</small>
+    </footer>
+
+</body>
+
+</html>
