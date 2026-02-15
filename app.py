@@ -316,8 +316,8 @@ with chat_col:
     # Fancy Header
     st.markdown("<h1>⚖️ JurisLens AI</h1>", unsafe_allow_html=True)
     
-    # EMPHASIZE ELASTIC SEARCH
-    st.info("⚡ **Powered by Elasticsearch:** Scalable to **Millions** of documents using **Hybrid Search** (Vector + Keyword) for unmatched precision.")
+    # EMPHASIZE ELASTIC SEARCH - Slick & Functional
+    st.info("⚡ **Powered by Elasticsearch:** Hybrid Search (Vector + Keyword) across **Millions** of documents.")
     
     st.markdown("#### *Navigate Global Financial Regulations with Autonomous Precision.*")
     st.markdown("---")
