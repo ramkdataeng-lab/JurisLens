@@ -457,11 +457,18 @@ with info_col:
     st.markdown("---")
     st.caption("© 2026 JurisLens Inc. | **Privacy Policy**")
     
-    # Trigger to show architecture
-    with st.expander("🛠️ View System Architecture"):
-        try:
-            with open("Arc_diagram/architecture_pro.html", "r", encoding='utf-8') as f:
-                html_code = f.read()
-            st.components.v1.html(html_code, height=600, scrolling=True)
-        except Exception as e:
-            st.error(f"Could not load diagram: {e}")
+# --- HELPER: Architecture Modal ---
+@st.experimental_dialog("JurisLens System Architecture")
+def show_architecture():
+    try:
+        with open("Arc_diagram/architecture_pro.html", "r", encoding='utf-8') as f:
+            html_code = f.read()
+        st.components.v1.html(html_code, height=750, scrolling=True)
+    except Exception as e:
+        st.error(f"Could not load diagram: {e}")
+
+# Call the button inside the layout
+with info_col:
+    st.markdown("---")
+    if st.button("🛠️ Architecture", use_container_width=True):
+        show_architecture()
