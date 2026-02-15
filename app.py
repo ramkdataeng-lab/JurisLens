@@ -77,19 +77,21 @@ st.markdown("""
     
     /* Custom Purple Button for 'primary' type */
     div.stButton > button:first-child {
-        background-color: #7c3aed; /* Brand Purple */
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); /* Soft Metallic Purple */
         color: white;
         border-radius: 8px;
         border: none;
         padding: 0.5rem 1rem;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3);
     }
     div.stButton > button:first-child:hover {
-        background-color: #6d28d9; /* Darker Purple */
-        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.5);
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); /* Slightly darker on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px -1px rgba(124, 58, 237, 0.4);
     }
     div.stButton > button:first-child:active {
-        background-color: #5b21b6;
+        transform: translateY(0px);
     }
     
     /* Chat Bubbles */
