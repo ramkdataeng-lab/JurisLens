@@ -460,7 +460,24 @@ with info_col:
     
 # --- HELPER: Architecture Modal (Robust) ---
 def show_architecture_content():
-    st.image("Arc_diagram/architecture.png", use_container_width=True)
+    import base64
+    
+    # Read Image and Encode
+    try:
+        with open("Arc_diagram/architecture.png", "rb") as f:
+            img_bytes = f.read()
+        encoded = base64.b64encode(img_bytes).decode()
+        
+        # Display with CSS precision
+        st.markdown(f"""
+        <div style="display: flex; justify-content: center;">
+            <img src="data:image/png;base64,{encoded}" 
+                 style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        </div>
+        """, unsafe_allow_html=True)
+        
+    except FileNotFoundError:
+        st.error("Architecture diagram not found.")
     
     # Tech Stack Legend
     st.markdown("""
