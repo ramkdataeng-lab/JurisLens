@@ -177,20 +177,22 @@ with chat_col:
         with st.chat_message("assistant", avatar="images/logo.png"):
             # Cool visualization of the thought process
             with st.status("🤖 AI Processing...", expanded=True) as status:
-                st_callback = StreamlitCallbackHandler(st.container())
-                agent_executor = setup_agent_v2(api_key)
-                
                 if agent_executor:
                     try:
                         response = agent_executor.run(prompt, callbacks=[st_callback])
-                        st.write(response) # Show final answer inside expander
-                        st.session_state.messages.append({"role": "assistant", "content": response})
                         status.update(label="✅ Complete!", state="complete", expanded=False)
                     except Exception as e:
                         st.error(f"Error: {e}")
                         status.update(label="❌ Error", state="error", expanded=True)
+                        response = None
                 else:
                     st.error("⚠️ Agent not initialized.")
+                    response = None
+            
+            # Show final answer OUTSIDE the status block so it remains visible
+            if response:
+                st.write(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
 
 # --- RIGHT INFO PANEL ---
 with info_col:
