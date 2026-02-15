@@ -26,7 +26,13 @@ def ingest_url(url, index_name="jurislens_docs"):
     """
     print(f"🌐 Loading URL: {url}")
     try:
-        loader = WebBaseLoader(url)
+        # Use valid User-Agent to avoid 403 blocks
+        loader = WebBaseLoader(
+            url,
+            header_template={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+        )
         documents = loader.load()
     except Exception as e:
         raise ValueError(f"Failed to load URL: {e}")

@@ -202,7 +202,10 @@ with st.sidebar:
                         except Exception as e:
                             st.error(f"Error URL: {e}")
                             
-                    status.update(label=f"✅ Indexed {total_docs} Items!", state="complete", expanded=False)
+                    if total_docs > 0:
+                        status.update(label=f"✅ Indexed {total_docs} Items!", state="complete", expanded=False)
+                    else:
+                        status.update(label="❌ Ingestion Failed", state="error", expanded=True)
 
     st.markdown("---")
     if st.button("🧹 Clear Chat", use_container_width=True):
