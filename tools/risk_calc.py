@@ -10,6 +10,10 @@ def calculate_risk_tool(amount: float, jurisdiction: str) -> str:
         amount: The transaction amount as a number (e.g. 50000).
         jurisdiction: The receiving country or region (e.g. "France").
     """
+    import time
+    print(f"🔌 Connecting to Enterprise Risk DB (Oracle)... Querying: {jurisdiction}")
+    time.sleep(1.5) # Simulate API latency
+    
     risk_level = "LOW"
     fine_estimate = 0
     
