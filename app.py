@@ -190,7 +190,12 @@ def setup_agent_v3(openai_api_key):
         max_iterations=5,
         early_stopping_method="generate",
         agent_kwargs={
-            "system_message": SystemMessage(content="You are JurisLens, an AI compliance expert. Use provided tools. For 'RegulationSearch', provide ONLY the 'query' string.")
+            "system_message": SystemMessage(content="""You are JurisLens, an AI compliance expert. 
+            
+            1. Use 'RegulationSearch' to find laws. Provide comprehensive, verbose explanations citing specific articles/sections. 
+            2. ALWAYS cite the source document name (e.g., '[Source: Singapore_AML_Act.pdf]') for every claim.
+            3. Use 'RiskCalculator' for risk assessment. Explain the risk factors in detail.
+            """)
         }
     )
 
