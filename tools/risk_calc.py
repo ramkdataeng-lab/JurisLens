@@ -3,29 +3,45 @@ from langchain_core.tools import tool
 @tool
 def calculate_risk_tool(amount: float, jurisdiction: str) -> str:
     """
-    Calculates the financial compliance risk and potential fine based on transaction amount and jurisdiction.
-    Use this tool when the user asks about risk levels or fines for a specific transfer.
+    Checks the transaction against the Live Ledger and calculates compliance risk.
+    Use this to validate if a specific transaction is safe given the client's history.
     
     Args:
-        amount: The transaction amount as a number (e.g. 50000).
-        jurisdiction: The receiving country or region (e.g. "France").
+        amount: The transaction amount.
+        jurisdiction: The receiving country (e.g. "Zylaria").
     """
     import time
-    print(f"🔌 Connecting to Enterprise Risk DB (Oracle)... Querying: {jurisdiction}")
-    time.sleep(1.5) # Simulate API latency
     
+    # 1. Simulate API Latency
+    print(f"🔌 Connecting to Core Banking Ledger... Looking up daily aggregates for {jurisdiction}...")
+    time.sleep(1.0)
+    
+    # 2. Simulate "Live State" that Grok doesn't know
+    # Pretend the client already sent money today
+    prior_transfers = 0
+    if "ZYLARIA" in jurisdiction.upper():
+        prior_transfers = 2500.00
+        print(f"⚠️ Found prior transaction today: ${prior_transfers:,.2f}")
+    
+    total_exposure = amount + prior_transfers
+    
+    # 3. Logic: Check Aggregate Limit ($5,000 usually)
+    limit = 5000
     risk_level = "LOW"
-    fine_estimate = 0
+    msg = ""
     
-    # Simple logic for demo purposes
     if jurisdiction.upper() in ["NORTH KOREA", "IRAN", "SYRIA", "RUSSIA"]:
-        risk_level = "CRITICAL"
-        fine_estimate = amount * 10
-    elif amount > 10000:
+         return "Risk Level: CRITICAL. Sanctioned Jurisdiction. Blocked immediately."
+
+    if total_exposure > limit:
         risk_level = "HIGH"
-        fine_estimate = amount * 0.5
-    elif amount > 2000:
-        risk_level = "MEDIUM"
-        fine_estimate = amount * 0.1
-        
-    return f"Risk Level: {risk_level}. Potential Fine: ${fine_estimate:,.2f} based on standard penalties."
+        msg = (f"TRANSGRESSION: Daily Aggregate Limit Exceeded.\n"
+               f"Current Request: ${amount:,.2f}\n"
+               f"Prior Today: ${prior_transfers:,.2f} (Found in Ledger)\n"
+               f"Total exposure: ${total_exposure:,.2f} (Limit: ${limit:,.2f})")
+    else:
+        risk_level = "LOW"
+        msg = (f"Safe. Total daily exposure ${total_exposure:,.2f} is within limit (${limit:,.2f}).\n"
+               f"(Includes ${prior_transfers:,.2f} from prior transactions today).")
+
+    return f"Risk Level: {risk_level}. {msg}"
