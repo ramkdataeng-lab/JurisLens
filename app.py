@@ -88,13 +88,14 @@ with st.sidebar:
     # Knowledge Base Section
     with st.expander("📚 Knowledge Base", expanded=True):
         uploaded_files = st.file_uploader("Upload Regulations (PDF)", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
+        url_input = st.text_input("Or Paste Web Link:", placeholder="https://example.com/regulation")
         
         if st.button("Process & Index", type="primary", use_container_width=True):
-            if not uploaded_files:
-                st.warning("Please upload files first.")
+            if not uploaded_files and not url_input:
+                st.warning("Please upload files or provide a link.")
             else:
                 import tempfile
-                from ingest import ingest_pdf
+                from ingest import ingest_pdf, ingest_url
                 
                 # Initialize session state for tracking indexed files if not exists
                 if "indexed_files" not in st.session_state:
@@ -102,24 +103,36 @@ with st.sidebar:
 
                 with st.status("Processing...", expanded=True) as status:
                     total_docs = 0
-                    for uploaded_file in uploaded_files:
-                        # Save to temp file
-                        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-                            tmp_file.write(uploaded_file.getvalue())
-                            tmp_path = tmp_file.name
-                        
-                        try:
-                            # Ingest
-                            ingest_pdf(tmp_path)
-                            total_docs += 1
-                            st.session_state.indexed_files.add(uploaded_file.name)
-                        except Exception as e:
-                            st.error(f"Error: {e}")
-                        finally:
-                            if os.path.exists(tmp_path):
-                                os.remove(tmp_path)
+                    
+                    # 1. Process PDFs
+                    if uploaded_files:
+                        for uploaded_file in uploaded_files:
+                            # Save to temp file
+                            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+                                tmp_file.write(uploaded_file.getvalue())
+                                tmp_path = tmp_file.name
                             
-                    status.update(label=f"✅ Indexed {total_docs} Docs!", state="complete", expanded=False)
+                            try:
+                                ingest_pdf(tmp_path)
+                                total_docs += 1
+                                st.session_state.indexed_files.add(uploaded_file.name)
+                            except Exception as e:
+                                st.error(f"Error PDF: {e}")
+                            finally:
+                                if os.path.exists(tmp_path):
+                                    os.remove(tmp_path)
+
+                    # 2. Process URL
+                    if url_input:
+                        try:
+                            st.write(f"🌐 Crawling: {url_input}...")
+                            ingest_url(url_input)
+                            total_docs += 1
+                            st.session_state.indexed_files.add(url_input)
+                        except Exception as e:
+                            st.error(f"Error URL: {e}")
+                            
+                    status.update(label=f"✅ Indexed {total_docs} Items!", state="complete", expanded=False)
 
     st.markdown("---")
     if st.button("🧹 Clear Chat", use_container_width=True):
