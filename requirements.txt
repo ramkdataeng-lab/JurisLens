@@ -13,3 +13,4 @@ python-dotenv
 tiktoken
 click
 watchdog
+beautifulsoup4
