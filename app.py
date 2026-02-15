@@ -279,40 +279,38 @@ with chat_col:
         st.session_state.messages.append({"role": "user", "content": prompt})
         
         # We need to process immediately
-        
         with st.chat_message("user", avatar="👤"):
-             st.write(prompt)
+            st.write(prompt)
 
         with st.chat_message("assistant", avatar="images/logo.png"):
-             # Cool visualization of the thought process
-             status_viz = st.empty()
-             progress_bar = st.progress(0)
+            # Cool visualization of the thought process
+            status_viz = st.empty()
+            progress_bar = st.progress(0)
              
-             # Initial status
-             status_viz.info("🤖 **AI Agent Active.** Analyzing request...")
+            # Initial status
+            status_viz.info("🤖 **AI Agent Active.** Analyzing request...")
              
-             # Simulate a "Scan" effect
-             for i in range(1, 30):
-                 time.sleep(0.01)
-                 progress_bar.progress(i)
+            # Simulate a "Scan" effect
+            for i in range(1, 30):
+                time.sleep(0.01)
+                progress_bar.progress(i)
              
-             # Use our custom handler defined at top of file
-             friendly_callback = FriendlyCallbackHandler(status_viz, progress_bar)
+            # Use our custom handler defined at top of file
+            my_callback = FriendlyCallbackHandler(status_viz, progress_bar)
              
-             agent_executor = setup_agent_v3(api_key)
+            agent_executor = setup_agent_v3(api_key)
+            response = None
                 
-             if agent_executor:
+            if agent_executor:
                 try:
-                    response = agent_executor.run(prompt, callbacks=[friendly_callback])
+                    response = agent_executor.run(prompt, callbacks=[my_callback])
                     # Clear visuals on done
                     status_viz.empty()
                     progress_bar.empty()
                 except Exception as e:
                     st.error(f"Error: {e}")
                     response = None
-             else:
-                st.error("⚠️ Agent not initialized.")
-                response = None
+
             
             # Show final answer
             if response:
