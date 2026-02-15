@@ -460,13 +460,26 @@ with info_col:
     
 # --- HELPER: Architecture Modal (Robust) ---
 def show_architecture_content():
-    st.image("Arc_diagram/architecture.png", use_column_width=True, caption="Enterprise Architecture v1.0")
+    st.image("Arc_diagram/architecture.png", use_container_width=True)
+    
+    # Tech Stack Legend
+    st.markdown("""
+    <div style="text-align: center; margin-top: 10px; padding: 10px; background-color: #f0f2f6; border-radius: 10px;">
+        <p style="margin:0; font-weight: bold; color: #31333F;">🚀 &nbsp; BUILT WITH &nbsp; 🚀</p>
+        <p style="margin:5px 0 0 0; font-size: 0.9em;">
+            <span style="color:#0077cc;"><b>Streamlit</b></span> (UI) &nbsp;•&nbsp;
+            <span style="color:#F5A623;"><b>Elasticsearch</b></span> (Vector Store) &nbsp;•&nbsp;
+            <span style="color:#00A67E;"><b>LangChain</b></span> (Orchestration) &nbsp;•&nbsp;
+            <span style="color:#7D55C7;"><b>GPT-4</b></span> (Reasoning)
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Check which dialog version is available
 if hasattr(st, "dialog"):
-    show_architecture = st.dialog("JurisLens System Architecture")(show_architecture_content)
+    show_architecture = st.dialog("JurisLens System Architecture", width="large")(show_architecture_content)
 elif hasattr(st, "experimental_dialog"):
-    show_architecture = st.experimental_dialog("JurisLens System Architecture")(show_architecture_content)
+    show_architecture = st.experimental_dialog("JurisLens System Architecture", width="large")(show_architecture_content)
 else:
     # Fallback for older Streamlit versions (just show in expander)
     def show_architecture():
