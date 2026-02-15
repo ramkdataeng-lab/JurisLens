@@ -67,15 +67,45 @@ st.set_page_config(
 )
 
 # Custom CSS for polish
+# Custom CSS for polish and branding
 st.markdown("""
 <style>
+    /* Global Styles */
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    
+    /* Custom Purple Button for 'primary' type */
+    div.stButton > button:first-child {
+        background-color: #7c3aed; /* Brand Purple */
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #6d28d9; /* Darker Purple */
+        box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.5);
+    }
+    div.stButton > button:first-child:active {
+        background-color: #5b21b6;
+    }
+    
+    /* Chat Bubbles */
     .stChatMessage {
-        border-radius: 10px;
-        padding: 10px;
+        background-color: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 0.5rem;
     }
-    .stSpinner {
-        text-align: center;
-    }
+    
+    /* Header Typography */
+    h1 { color: #1e293b; font-family: 'Inter', sans-serif;}
+    
+    /* Hide Deploy Button */
+    .stDeployButton {display:none;}
 </style>
 """, unsafe_allow_html=True)
 
