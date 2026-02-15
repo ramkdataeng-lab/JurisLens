@@ -1,0 +1,45 @@
+graph TD
+    %% Nodes
+    User((User))
+    UI[Streamlit UI]
+    Agent[JurisLens Agent<br>(LangChain Orchestrator)]
+    
+    ES[(Elasticsearch<br>Vector + Keyword)]
+    Risk[(Internal Risk Ledger<br>SQL/API)]
+    Sanctions[(Global Sanctions List<br>API)]
+    
+    PDF[Policy PDF]
+    LLM[OpenAI GPT-4]
+
+    %% Relationships
+    User -->|Upload PDF| UI
+    User -->|Ask Question| UI
+    UI -->|Ingest| ES
+    UI -->|Invoke Agent| Agent
+    
+    Agent -->|Reasoning| LLM
+    
+    subgraph "Retrieval (RAG)"
+        Agent -->|Search Regulations| ES
+        ES -->|Relevant Chunks| Agent
+    end
+    
+    subgraph "Tools (Live Compliance)"
+        Agent -->|Check Ledger Scope| Risk
+        Risk -->|Prior Transaction Data| Agent
+        
+        Agent -->|Check Entity Status| Sanctions
+        Sanctions -->|Watchlist Match| Agent
+    end
+    
+    Agent -->|Final Compliance Decision| UI
+    UI -->|Display w/ Citations| User
+
+    %% Styling
+    style User fill:#333,stroke:#fff,stroke-width:2px,color:#fff
+    style UI fill:#4B0082,stroke:#fff,stroke-width:2px,color:#fff
+    style Agent fill:#2E8B57,stroke:#fff,stroke-width:2px,color:#fff
+    style ES fill:#FFD700,stroke:#333,stroke-width:2px,color:#000
+    style Risk fill:#CD5C5C,stroke:#333,stroke-width:2px,color:#fff
+    style Sanctions fill:#CD5C5C,stroke:#333,stroke-width:2px,color:#fff
+    style LLM fill:#1E90FF,stroke:#fff,stroke-width:2px,color:#fff

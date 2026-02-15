@@ -57,6 +57,7 @@ from langchain_community.callbacks import StreamlitCallbackHandler
 # Import tools
 from tools.regulation_search import search_regulations_tool
 from tools.risk_calc import calculate_risk_tool
+from tools.sanctions import check_sanctions_tool
 
 from langchain.callbacks.base import BaseCallbackHandler
 import time
@@ -78,12 +79,18 @@ class FriendlyCallbackHandler(BaseCallbackHandler):
             self.status.info("🔍 **Scanning Knowledge Base...**")
         elif tool_name == "calculate_risk_tool":
             self.status.warning("🧮 **Calculating Compliance Risk...**")
+        elif tool_name == "check_sanctions_tool":
+            self.status.error("🕵️‍♀️ **Scanning Sanctions Databases...**")
             
     def on_tool_end(self, output, **kwargs):
         self.step += 10
         if self.step > 95: self.step = 95
         self.progress.progress(self.step)
-        if "simulated" in str(output).lower() or "source" in str(output).lower():
+        
+        output_str = str(output)
+        if "Daily Aggregate Limit Exceeded" in output_str:
+             self.status.error("❌ **LEDGER CHECK FAILED:** Daily Limit Exceeded!")
+        elif "simulated" in output_str.lower() or "source" in output_str.lower():
              self.status.success("✅ **Relevant Documents Found.** Analysis in progress...")
         else:
              self.status.info("🤔 **Analyzing Findings...**")
@@ -133,8 +140,50 @@ st.markdown("""
         margin-bottom: 0.5rem;
     }
     
+    /* Ultra-Compact Sidebar Elements */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0.2rem !important;
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+    }
+    section[data-testid="stSidebar"] > div {
+        padding-top: 1rem !important;
+    }
+    
+    /* Shrink File Uploader Logic */
+    [data-testid="stFileUploader"] {
+        padding-top: 0rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    [data-testid="stFileUploader"] section {
+        padding: 0.5rem !important;
+        min-height: 0px !important;
+    }
+    [data-testid="stFileUploader"] label {
+        font-size: 0.8rem !important;
+        margin-bottom: 0rem !important;
+    }
+    
+    /* Compact Text Input */
+    [data-testid="stTextInput"] {
+        padding-top: 0rem !important;
+    }
+    [data-testid="stTextInput"] label {
+        font-size: 0.8rem !important;
+        margin-bottom: 0rem !important;
+    }
+    
     /* Header Typography */
     h1 { color: #1e293b; font-family: 'Inter', sans-serif;}
+    
+    /* Compact Sidebar */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0.5rem !important;
+        padding-top: 0rem !important;
+    }
+    section[data-testid="stSidebar"] > div {
+        padding-top: 0rem !important;
+    }
     
     /* Hide Deploy Button */
     .stDeployButton {display:none;}
@@ -143,18 +192,18 @@ st.markdown("""
 
 # --- SIDEBAR (MINIMALIST) ---
 with st.sidebar:
-    st.image("images/logo.png", use_column_width=True)
-    st.markdown("### 🏛️ Compliance Agent")
-    st.markdown("---")
+    # Small logo to save space
+    st.image("images/logo.png", width=120)
+    st.markdown("### ⚡ Elastic RAG  \n<span style='font-size:0.8em;'>🔍 **Mode:** Hybrid (Vector + Keyword)</span>", unsafe_allow_html=True)
     
     # Knowledge Base Section
     with st.expander("📚 Knowledge Base", expanded=True):
         # Stats
         kb_count = len(st.session_state.get("kb_text", []))
         if kb_count > 0:
-            st.success(f"✅ KB Loaded: {kb_count} Chunks")
+            st.success(f"✅ KB: {kb_count} Chunks")
         else:
-            st.info("ℹ️ Knowledge Base Empty")
+            st.caption("ℹ️ Knowledge Base Empty")
 
         uploaded_files = st.file_uploader("Upload Regulations (PDF)", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
         # Pre-filled placeholder with a real eCFR regulation link for easier demo
@@ -207,7 +256,6 @@ with st.sidebar:
                     else:
                         status.update(label="❌ Ingestion Failed", state="error", expanded=True)
 
-    st.markdown("---")
     if st.button("🧹 Clear Chat", use_container_width=True):
         st.session_state.messages = []
         try:
@@ -218,7 +266,7 @@ with st.sidebar:
 # --- AGENT SETUP ---
 def setup_agent_v3(openai_api_key):
     # Pass key explicitly to avoid cache staleness
-    tools = [search_regulations_tool, calculate_risk_tool]
+    tools = [search_regulations_tool, calculate_risk_tool, check_sanctions_tool]
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
     
     # Use the High-Level "initialize_agent" -> It handles everything automatically
@@ -234,7 +282,8 @@ def setup_agent_v3(openai_api_key):
             
             1. Use 'RegulationSearch' to find laws. Provide comprehensive, verbose explanations citing specific articles/sections. 
             2. ALWAYS cite the source document name (e.g., '[Source: Singapore_AML_Act.pdf]') for every claim.
-            3. Use 'RiskCalculator' for risk assessment. Explain the risk factors in detail.
+            3. Use 'RiskCalculator' for risk assessment and live ledger checks.
+            4. Use 'SanctionsChecker' to verify if individuals or entities are on blacklists or sanctioned watchlists.
             """)
         }
     )
@@ -265,10 +314,11 @@ chat_col, info_col = st.columns([0.75, 0.25], gap="large")
 with chat_col:
     # Fancy Header
     st.markdown("<h1>⚖️ JurisLens AI</h1>", unsafe_allow_html=True)
-    st.markdown("#### *Navigate Global Financial Regulations with Autonomous Precision.*")
     
-    # Tech Badges
-    st.caption("🚀 Powered by **Elasticsearch RAG** | **OpenAI GPT-4** | **LangChain Agents**")
+    # EMPHASIZE ELASTIC SEARCH
+    st.info("⚡ **Powered by Elasticsearch:** Scalable to **Millions** of documents using **Hybrid Search** (Vector + Keyword) for unmatched precision.")
+    
+    st.markdown("#### *Navigate Global Financial Regulations with Autonomous Precision.*")
     st.markdown("---")
 
     if "messages" not in st.session_state:
@@ -401,3 +451,17 @@ with info_col:
         st.markdown("### 🗂️ Active Docs")
         for filename in st.session_state.indexed_files:
             st.success(f"📄 {filename}")
+
+# --- FOOTER ---
+    # --- FOOTER (In Info Panel) ---
+    st.markdown("---")
+    st.caption("© 2026 JurisLens Inc. | **Privacy Policy**")
+    
+    # Trigger to show architecture
+    with st.expander("🛠️ View System Architecture"):
+        try:
+            with open("Arc_diagram/architecture_pro.html", "r", encoding='utf-8') as f:
+                html_code = f.read()
+            st.components.v1.html(html_code, height=600, scrolling=True)
+        except Exception as e:
+            st.error(f"Could not load diagram: {e}")

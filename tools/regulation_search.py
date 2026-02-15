@@ -25,27 +25,46 @@ def search_regulations_tool(query: str) -> str:
         for item in st.session_state.kb_text:
             content = item["content"].lower()
             # Simple keyword matching: count hits
-            score = sum(1 for term in query_terms if term in content and len(term) > 3)
-            if score > 0:
+            hits = sum(1 for term in query_terms if term in content and len(term) > 3)
+            if hits > 0:
+                # Mock score: Normalized to 0-1 range roughly
+                score = min(0.99, hits / 10.0) 
                 local_results.append((score, item))
+        
         # Sort by relevance
         local_results.sort(key=lambda x: x[0], reverse=True)
-        local_results = [x[1] for x in local_results[:3]]
+        # Take top 3
+        top_local = local_results[:3]
 
     # 2. Try Elastic Search
     elastic_results = None
     if os.getenv("ELASTIC_CLOUD_ID"):
         try:
+            # Initialize Store
+            embeddings = OpenAIEmbeddings()
             vector_store = ElasticsearchStore(
-                embedding=OpenAIEmbeddings(),
+                embedding=embeddings,
                 es_cloud_id=os.getenv("ELASTIC_CLOUD_ID"),
                 es_api_key=os.getenv("ELASTIC_API_KEY"),
-                index_name="jurislens_docs",
-                strategy=ElasticsearchStore.ApproxRetrievalStrategy() 
+                index_name="jurislens_docs"
             )
-            docs = vector_store.similarity_search(query, k=3)
-            if docs:
-                elastic_results = "\n\n".join([f"[Source: {d.metadata.get('source', 'Unknown')}]\n{d.page_content}" for d in docs])
+            # Use similarity search WITH SCORE
+            docs_and_scores = vector_store.similarity_search_with_score(query, k=3)
+            
+            if docs_and_scores:
+                formatted_docs = []
+                for doc, score in docs_and_scores:
+                    source = doc.metadata.get('source', 'Unknown')
+                    page_meta = doc.metadata.get('page', 0)
+                    try:
+                        page = int(page_meta) + 1
+                    except:
+                        page = 1
+                    
+                    # Elastic scores
+                    formatted_docs.append(f"[Source: {source} (Page {page}) | Relevance: {score:.4f}]\n{doc.page_content}")
+                elastic_results = "\n\n".join(formatted_docs)
+                
         except Exception as e:
             print(f"Elastic Search Failed: {e}")
 
@@ -53,7 +72,7 @@ def search_regulations_tool(query: str) -> str:
     if elastic_results:
         return elastic_results
     
-    if local_results:
-        return "\n\n".join([f"[Source: {item['source']}]\n{item['content']}" for item in local_results])
+    if top_local:
+        return "\n\n".join([f"[Source: {item['source']} | Relevance: {score:.2f} (Local Keyword Match)]\n{item['content']}" for score, item in top_local])
 
     return "No relevant regulations found in Knowledge Base (Elastic + Local Backup). Please ingest documents first."
