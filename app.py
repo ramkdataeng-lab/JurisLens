@@ -198,12 +198,19 @@ def setup_agent_v3(openai_api_key):
 def enrich_response(text):
     if not text: return text
     lower_text = text.lower()
-    if "risk level: high" in lower_text or "risk level: critical" in lower_text:
+    
+    # Check for High Risk keywords
+    if "high risk" in lower_text or "risk level is high" in lower_text or "risk level: high" in lower_text or "critical risk" in lower_text or "considered high" in lower_text:
         return f"### 🔴 📈 HIGH RISK ALERT\n\n{text}"
-    elif "risk level: medium" in lower_text:
+    
+    # Check for Medium Risk keywords
+    elif "medium risk" in lower_text or "risk level is medium" in lower_text or "risk level: medium" in lower_text or "moderate risk" in lower_text:
         return f"### 🟠 ⚠️ MEDIUM RISK WARNING\n\n{text}"
-    elif "risk level: low" in lower_text:
+    
+    # Check for Low Risk keywords
+    elif "low risk" in lower_text or "risk level is low" in lower_text or "risk level: low" in lower_text or "minimal risk" in lower_text:
         return f"### 🟢 📉 LOW RISK ASSESSMENT\n\n{text}"
+        
     return text
 
 # --- MAIN LAYOUT (2 COLUMNS) ---
