@@ -201,9 +201,9 @@ with chat_col:
 with info_col:
     st.markdown("### ⚡ Engine")
     st.info("""
-    **Search:** Elasticsearch Vector Store
-    **Model:** GPT-4 Turbo
-    **Framework:** LangChain Agents
+    *   **Search:** Elasticsearch Vector Store
+    *   **Model:** GPT-4 Turbo
+    *   **Framework:** LangChain Agents
     """)
     
     st.markdown("### 🏆 Why Elastic?")
