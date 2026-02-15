@@ -149,6 +149,13 @@ with st.sidebar:
     
     # Knowledge Base Section
     with st.expander("📚 Knowledge Base", expanded=True):
+        # Stats
+        kb_count = len(st.session_state.get("kb_text", []))
+        if kb_count > 0:
+            st.success(f"✅ KB Loaded: {kb_count} Chunks")
+        else:
+            st.info("ℹ️ Knowledge Base Empty")
+
         uploaded_files = st.file_uploader("Upload Regulations (PDF)", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
         # Pre-filled placeholder with a real eCFR regulation link for easier demo
         url_input = st.text_input("Or Paste Web Link:", placeholder="https://www.ecfr.gov/current/title-31/part-1010/section-1010.610")
@@ -206,7 +213,6 @@ with st.sidebar:
             st.experimental_rerun()
 
 # --- AGENT SETUP ---
-@st.cache_resource
 def setup_agent_v3(openai_api_key):
     # Pass key explicitly to avoid cache staleness
     tools = [search_regulations_tool, calculate_risk_tool]

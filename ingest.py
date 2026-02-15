@@ -12,12 +12,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def ingest_pdf(pdf_path, index_name="jurislens_docs"):
     """
-    Ingests a PDF into Elasticsearch Vector Store.
+    Ingests a PDF into Elasticsearch Vector Store (and Local Backup).
     """
-    if not os.getenv("ELASTIC_CLOUD_ID"):
-        print("⚠️ No Elastic Cloud ID found. Skipping ingestion.")
-        return
-
     print(f"📄 Loading PDF: {pdf_path}")
     loader = PyPDFLoader(pdf_path)
     documents = loader.load()
@@ -26,12 +22,8 @@ def ingest_pdf(pdf_path, index_name="jurislens_docs"):
 
 def ingest_url(url, index_name="jurislens_docs"):
     """
-    Ingests a Web Page into Elasticsearch Vector Store.
+    Ingests a Web Page into Elasticsearch Vector Store (and Local Backup).
     """
-    if not os.getenv("ELASTIC_CLOUD_ID"):
-            print("⚠️ No Elastic Cloud ID found. Skipping ingestion.")
-            return
-
     print(f"🌐 Loading URL: {url}")
     try:
         loader = WebBaseLoader(url)
