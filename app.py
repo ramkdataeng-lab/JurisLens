@@ -194,16 +194,19 @@ if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     with st.chat_message("assistant", avatar="images/logo.png"):
-        # The key to visibility: StreamlitCallbackHandler
-        st_callback = StreamlitCallbackHandler(st.container())
-        
-        agent_executor = setup_agent_v2(api_key)
-        if agent_executor:
-            try:
-                response = agent_executor.run(prompt, callbacks=[st_callback])
-                st.write(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
-            except Exception as e:
-                st.error(f"Error: {e}")
-        else:
-            st.error("⚠️ Agent not initialized. Check API Keys.")
+        # Cool visualization of the thought process
+        with st.status("🤖 AI Processing...", expanded=True) as status:
+            st_callback = StreamlitCallbackHandler(st.container())
+            agent_executor = setup_agent_v2(api_key)
+            
+            if agent_executor:
+                try:
+                    response = agent_executor.run(prompt, callbacks=[st_callback])
+                    st.write(response) # Show final answer inside expander
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                    status.update(label="✅ Complete!", state="complete", expanded=False)
+                except Exception as e:
+                    st.error(f"Error: {e}")
+                    status.update(label="❌ Error", state="error", expanded=True)
+            else:
+                st.error("⚠️ Agent not initialized.")
