@@ -194,6 +194,18 @@ def setup_agent_v3(openai_api_key):
         }
     )
 
+# Helper to clean up response and add visual cues
+def enrich_response(text):
+    if not text: return text
+    lower_text = text.lower()
+    if "risk level: high" in lower_text or "risk level: critical" in lower_text:
+        return f"### 🔴 📈 HIGH RISK ALERT\n\n{text}"
+    elif "risk level: medium" in lower_text:
+        return f"### 🟠 ⚠️ MEDIUM RISK WARNING\n\n{text}"
+    elif "risk level: low" in lower_text:
+        return f"### 🟢 📉 LOW RISK ASSESSMENT\n\n{text}"
+    return text
+
 # --- MAIN LAYOUT (2 COLUMNS) ---
 # Create a 2-column layout: [Chat Area (75%), Info Panel (25%)]
 chat_col, info_col = st.columns([0.75, 0.25], gap="large")
@@ -241,8 +253,14 @@ with chat_col:
             
             # Show final answer
             if response:
-                st.write(response)
+                final_text = enrich_response(response)
+                st.markdown(final_text)
                 st.session_state.messages.append({"role": "assistant", "content": response})
+                
+                # Feedback for current answer
+                col1, col2, col3 = st.columns([1, 1, 8])
+                with col1: st.button("👍", key="curr_up", help="Helpful")
+                with col2: st.button("👎", key="curr_down", help="Not Helpful")
 
     st.markdown("### 💬 Conversation History")
     
@@ -261,9 +279,6 @@ with chat_col:
         if msg["role"] == "user":
             user_msg = msg
             ai_msg = None
-            # Look forward in the *original* context or just next index
-            # Be careful with indices since we sliced.
-            # Actually, simpler: just iterate blocks.
             
             # Find pairing in the sliced list
             if i + 1 < len(history_messages) and history_messages[i+1]["role"] == "assistant":
@@ -272,15 +287,22 @@ with chat_col:
             with st.container():
                 st.chat_message("user", avatar="👤").write(user_msg["content"])
                 if ai_msg:
-                    st.chat_message("assistant", avatar="images/logo.png").write(ai_msg["content"])
+                    with st.chat_message("assistant", avatar="images/logo.png"):
+                        # Enrich and Display
+                        final_text = enrich_response(ai_msg["content"])
+                        st.markdown(final_text)
+                        
+                        # Feedback Buttons (Small)
+                        col1, col2, col3 = st.columns([1, 1, 8])
+                        with col1:
+                            st.button("👍", key=f"up_{i}", help="Helpful")
+                        with col2:
+                            st.button("👎", key=f"down_{i}", help="Not Helpful")
+                            
                 st.markdown("---")
 
     # Show initial greeting if it exists and wasn't part of the loop (e.g. index 0)
     if history_messages and history_messages[0]["role"] == "assistant":
-         # Check if it was skipped by the loop (loop checks 'user')
-         pass
-         # Actually, the loop logic 'if user' skips the standalone assistant 0.
-         # So we always print msg[0] at the end if it's assistant.
          st.chat_message("assistant", avatar="images/logo.png").write(history_messages[0]["content"])
 
 # --- RIGHT INFO PANEL ---
