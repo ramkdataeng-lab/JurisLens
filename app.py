@@ -58,6 +58,36 @@ from langchain_community.callbacks import StreamlitCallbackHandler
 from tools.regulation_search import search_regulations_tool
 from tools.risk_calc import calculate_risk_tool
 
+from langchain.callbacks.base import BaseCallbackHandler
+import time
+
+# Custom Handler for user-friendly "Scanning" visuals
+class FriendlyCallbackHandler(BaseCallbackHandler):
+    def __init__(self, status_placeholder, progress_bar):
+        self.status = status_placeholder
+        self.progress = progress_bar
+        self.step = 30 # Start at 30%
+        
+    def on_tool_start(self, serialized, input_str, **kwargs):
+        tool_name = serialized.get("name")
+        self.step += 10
+        if self.step > 90: self.step = 90
+        self.progress.progress(self.step)
+        
+        if tool_name == "search_regulations_tool":
+            self.status.info("🔍 **Scanning Knowledge Base...**")
+        elif tool_name == "calculate_risk_tool":
+            self.status.warning("🧮 **Calculating Compliance Risk...**")
+            
+    def on_tool_end(self, output, **kwargs):
+        self.step += 10
+        if self.step > 95: self.step = 95
+        self.progress.progress(self.step)
+        if "simulated" in str(output).lower() or "source" in str(output).lower():
+             self.status.success("✅ **Relevant Documents Found.** Analysis in progress...")
+        else:
+             self.status.info("🤔 **Analyzing Findings...**")
+
 # --- PAGE CONFIG ---
 st.set_page_config(
     page_title="JurisLens AI",
@@ -249,26 +279,40 @@ with chat_col:
         st.session_state.messages.append({"role": "user", "content": prompt})
         
         # We need to process immediately
+        
         with st.chat_message("user", avatar="👤"):
              st.write(prompt)
 
         with st.chat_message("assistant", avatar="images/logo.png"):
              # Cool visualization of the thought process
-            with st.status("🤖 AI Processing...", expanded=True) as status:
-                st_callback = StreamlitCallbackHandler(st.container())
-                agent_executor = setup_agent_v3(api_key)
+             status_viz = st.empty()
+             progress_bar = st.progress(0)
+             
+             # Initial status
+             status_viz.info("🤖 **AI Agent Active.** Analyzing request...")
+             
+             # Simulate a "Scan" effect
+             for i in range(1, 30):
+                 time.sleep(0.01)
+                 progress_bar.progress(i)
+             
+             # Use our custom handler defined at top of file
+             friendly_callback = FriendlyCallbackHandler(status_viz, progress_bar)
+             
+             agent_executor = setup_agent_v3(api_key)
                 
-                if agent_executor:
-                    try:
-                        response = agent_executor.run(prompt, callbacks=[st_callback])
-                        status.update(label="✅ Complete!", state="complete", expanded=False)
-                    except Exception as e:
-                        st.error(f"Error: {e}")
-                        status.update(label="❌ Error", state="error", expanded=True)
-                        response = None
-                else:
-                    st.error("⚠️ Agent not initialized.")
+             if agent_executor:
+                try:
+                    response = agent_executor.run(prompt, callbacks=[friendly_callback])
+                    # Clear visuals on done
+                    status_viz.empty()
+                    progress_bar.empty()
+                except Exception as e:
+                    st.error(f"Error: {e}")
                     response = None
+             else:
+                st.error("⚠️ Agent not initialized.")
+                response = None
             
             # Show final answer
             if response:

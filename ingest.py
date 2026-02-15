@@ -41,6 +41,8 @@ def ingest_url(url, index_name="jurislens_docs"):
     
     _split_and_index(documents, index_name)
 
+import streamlit as st
+
 def _split_and_index(documents, index_name):
     # Split into Chunks
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
@@ -50,16 +52,33 @@ def _split_and_index(documents, index_name):
          print("⚠️ No content found to index.")
          return
 
+    # --- BACKUP: Store in Session State for Demo ---
+    if "kb_text" not in st.session_state:
+        st.session_state.kb_text = []
+    
+    for d in docs:
+        st.session_state.kb_text.append({
+            "source": d.metadata.get("source", "Unknown"),
+            "content": d.page_content
+        })
+    print(f"💾 Stored {len(docs)} chunks in local backup memory.")
+    # -----------------------------------------------
+
     print(f"🧩 Split into {len(docs)} chunks. Indexing to '{index_name}'...")
     
-    # Store in Elasticsearch
-    vector_store = ElasticsearchStore.from_documents(
-        docs,
-        embedding=OpenAIEmbeddings(),
-        es_cloud_id=os.getenv("ELASTIC_CLOUD_ID"),
-        es_api_key=os.getenv("ELASTIC_API_KEY"),
-        index_name=index_name,
-        strategy=ElasticsearchStore.ApproxRetrievalStrategy() # Uses HNSW
-    )
-    
-    print("✅ Indexing Complete!")
+    # Store in Elasticsearch (if configured)
+    if os.getenv("ELASTIC_CLOUD_ID"):
+        try:
+            vector_store = ElasticsearchStore.from_documents(
+                docs,
+                embedding=OpenAIEmbeddings(),
+                es_cloud_id=os.getenv("ELASTIC_CLOUD_ID"),
+                es_api_key=os.getenv("ELASTIC_API_KEY"),
+                index_name=index_name,
+                strategy=ElasticsearchStore.ApproxRetrievalStrategy() # Uses HNSW
+            )
+            print("✅ Indexing Complete!")
+        except Exception as e:
+            print(f"⚠️ Elastic Indexing failed (using local backup): {e}")
+    else:
+        print("⚠️ Elastic not configured. Using local backup only.")
