@@ -68,8 +68,14 @@ def _split_and_index(documents, index_name):
         st.session_state.kb_text = []
     
     for d in docs:
+        source = d.metadata.get("source", "Unknown")
+        # Enhance source with Page Number if available (PDFs)
+        page = d.metadata.get("page", None)
+        if page is not None:
+            source = f"{source} (Page {int(page) + 1})"
+            
         st.session_state.kb_text.append({
-            "source": d.metadata.get("source", "Unknown"),
+            "source": source,
             "content": d.page_content
         })
     print(f"💾 Stored {len(docs)} chunks in local backup memory.")
