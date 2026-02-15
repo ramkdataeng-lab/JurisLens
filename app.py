@@ -120,7 +120,8 @@ with st.sidebar:
     # Knowledge Base Section
     with st.expander("📚 Knowledge Base", expanded=True):
         uploaded_files = st.file_uploader("Upload Regulations (PDF)", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
-        url_input = st.text_input("Or Paste Web Link:", placeholder="https://example.com/regulation")
+        # Pre-filled placeholder with a real eCFR regulation link for easier demo
+        url_input = st.text_input("Or Paste Web Link:", placeholder="https://www.ecfr.gov/current/title-31/part-1010/section-1010.610")
         
         if st.button("Process & Index", type="primary", use_container_width=True):
             if not uploaded_files and not url_input:
@@ -233,7 +234,13 @@ with chat_col:
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! I am **JurisLens**. I can search through thousands of regulations or calculate compliance risk.\n\nTry asking: \n- *'What are the AML requirements for crypto in Singapore?'*\n- *'Calculate the risk for a $50k transfer to France.'*"}
+            {"role": "assistant", "content": """Hello! I am **JurisLens**. I can search through thousands of regulations or calculate compliance risk.
+
+**🚀 Try this live demo:**
+1. Paste this URL in the sidebar: `https://www.ecfr.gov/current/title-31/part-1010/section-1010.610`
+2. Click **Process & Index**.
+3. Ask: *'What are the enhanced due diligence requirements for foreign correspondent accounts?'*
+"""}
         ]
 
     # Handle Input - Pinned to bottom by default
