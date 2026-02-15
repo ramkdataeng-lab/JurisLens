@@ -207,11 +207,13 @@ with info_col:
     """)
     
     st.markdown("### 🏆 Why Elastic?")
-    st.caption("""
-    Unlike standard chatbots, JurisLens is **grounded**:
-    1. **Ingest:** PDFs → Vectors.
-    2. **Index:** Search millions of docs in ms.
-    3. **Retrieve:** Facts > Hallucinations.
+    st.info("""
+    **⚡ Powered by Elasticsearch RAG**
+    Unlike standard chatbots limited by context size:
+    
+    *   **Scale:** Index **thousands** of PDFs, not just one.
+    *   **Precision:** Find exact regulations in milliseconds.
+    *   **Privacy:** Data stays in your private vectors.
     """)
     
     # Display Indexed Files List Here
