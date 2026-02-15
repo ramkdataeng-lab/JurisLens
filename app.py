@@ -154,8 +154,13 @@ def setup_agent_v2(openai_api_key):
 chat_col, info_col = st.columns([0.75, 0.25], gap="large")
 
 with chat_col:
-    st.title("JurisLens AI")
-    st.markdown("Your autonomous compliance assistant.")
+    # Fancy Header
+    st.markdown("<h1>⚖️ JurisLens AI</h1>", unsafe_allow_html=True)
+    st.markdown("#### *Navigate Global Financial Regulations with Autonomous Precision.*")
+    
+    # Tech Badges
+    st.caption("🚀 Powered by **Elasticsearch RAG** | **OpenAI GPT-4** | **LangChain Agents**")
+    st.markdown("---")
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
