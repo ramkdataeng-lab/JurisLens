@@ -177,6 +177,9 @@ with chat_col:
         with st.chat_message("assistant", avatar="images/logo.png"):
             # Cool visualization of the thought process
             with st.status("🤖 AI Processing...", expanded=True) as status:
+                st_callback = StreamlitCallbackHandler(st.container())
+                agent_executor = setup_agent_v2(api_key)
+                
                 if agent_executor:
                     try:
                         response = agent_executor.run(prompt, callbacks=[st_callback])
