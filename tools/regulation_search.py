@@ -20,6 +20,7 @@ def search_regulations_tool(query: str) -> str:
     
     # 1. Try Local Search if Elastic is missing OR as a fallback
     local_results = []
+    top_local = []  # Initialize to avoid UnboundLocalError
     if "kb_text" in st.session_state and st.session_state.kb_text:
         query_terms = query.lower().split()
         for item in st.session_state.kb_text:
