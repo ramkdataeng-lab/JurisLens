@@ -244,40 +244,42 @@ with chat_col:
 
     st.markdown("### 💬 Conversation History")
     
-    # Logic to display Q&A pairs in Reverse Chronological Order
-    # Structure: [SystemGreeting, User1, AI1, User2, AI2, ...]
-    # We want to show: (User2, AI2), then (User1, AI1), then Greeting.
+    # Logic: If we just added a new Q&A pair (prompt is True), 
+    # we don't want to show it in history yet (because it's shown above).
+    # So we slice the list to exclude the last 2 messages.
+    # Otherwise, show everything.
     
-    messages = st.session_state.messages
+    all_messages = st.session_state.messages
+    history_messages = all_messages[:-2] if prompt and len(all_messages) >= 2 else all_messages
     
-    # 1. Reverse iterate through the list, looking for User messages
-    # We start from the end. If we find a User message, we check if the next one is AI.
-    
-    for i in range(len(messages) - 1, -1, -1):
-        msg = messages[i]
+    # Reverse iterate for history
+    for i in range(len(history_messages) - 1, -1, -1):
+        msg = history_messages[i]
         
-        # If it's a User message, this is the start of a "Block"
         if msg["role"] == "user":
             user_msg = msg
-            # Check if there is an AI response immediately following it (in the original list order)
-            # i is the index. So the response would be at i+1
             ai_msg = None
-            if i + 1 < len(messages) and messages[i+1]["role"] == "assistant":
-                ai_msg = messages[i+1]
+            # Look forward in the *original* context or just next index
+            # Be careful with indices since we sliced.
+            # Actually, simpler: just iterate blocks.
             
-            # Use a container for the pair to keep them together visually
+            # Find pairing in the sliced list
+            if i + 1 < len(history_messages) and history_messages[i+1]["role"] == "assistant":
+                 ai_msg = history_messages[i+1]
+            
             with st.container():
                 st.chat_message("user", avatar="👤").write(user_msg["content"])
                 if ai_msg:
                     st.chat_message("assistant", avatar="images/logo.png").write(ai_msg["content"])
                 st.markdown("---")
 
-    # 2. Finally, show the initial greeting (if it exists and is the first message)
-    if messages and messages[0]["role"] == "assistant":
-        # Check if we haven't already displayed it (i.e., if it was a lonely assistant message not paired)
-        # Actually, in our loop above, we only trigger on "user". So the first assistant message is skipped.
-        # Let's show it at the very bottom.
-        st.chat_message("assistant", avatar="images/logo.png").write(messages[0]["content"])
+    # Show initial greeting if it exists and wasn't part of the loop (e.g. index 0)
+    if history_messages and history_messages[0]["role"] == "assistant":
+         # Check if it was skipped by the loop (loop checks 'user')
+         pass
+         # Actually, the loop logic 'if user' skips the standalone assistant 0.
+         # So we always print msg[0] at the end if it's assistant.
+         st.chat_message("assistant", avatar="images/logo.png").write(history_messages[0]["content"])
 
 # --- RIGHT INFO PANEL ---
 with info_col:
