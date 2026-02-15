@@ -243,15 +243,41 @@ with chat_col:
                 st.session_state.messages.append({"role": "assistant", "content": response})
 
     st.markdown("### 💬 Conversation History")
-    # Display History in REVERSE order (Latest on Top)
-    # Skip the last transaction if we just added it (to avoid double rendering during the run? 
-    # Actually, Streamlit reruns the whole script. 
-    # So we just render the list reversed.
     
-    for msg in reversed(st.session_state.messages):
-        role_avatar = "👤" if msg["role"] == "user" else "images/logo.png"
-        with st.chat_message(msg["role"], avatar=role_avatar):
-            st.write(msg["content"])
+    # Logic to display Q&A pairs in Reverse Chronological Order
+    # Structure: [SystemGreeting, User1, AI1, User2, AI2, ...]
+    # We want to show: (User2, AI2), then (User1, AI1), then Greeting.
+    
+    messages = st.session_state.messages
+    
+    # 1. Reverse iterate through the list, looking for User messages
+    # We start from the end. If we find a User message, we check if the next one is AI.
+    
+    for i in range(len(messages) - 1, -1, -1):
+        msg = messages[i]
+        
+        # If it's a User message, this is the start of a "Block"
+        if msg["role"] == "user":
+            user_msg = msg
+            # Check if there is an AI response immediately following it (in the original list order)
+            # i is the index. So the response would be at i+1
+            ai_msg = None
+            if i + 1 < len(messages) and messages[i+1]["role"] == "assistant":
+                ai_msg = messages[i+1]
+            
+            # Use a container for the pair to keep them together visually
+            with st.container():
+                st.chat_message("user", avatar="👤").write(user_msg["content"])
+                if ai_msg:
+                    st.chat_message("assistant", avatar="images/logo.png").write(ai_msg["content"])
+                st.markdown("---")
+
+    # 2. Finally, show the initial greeting (if it exists and is the first message)
+    if messages and messages[0]["role"] == "assistant":
+        # Check if we haven't already displayed it (i.e., if it was a lonely assistant message not paired)
+        # Actually, in our loop above, we only trigger on "user". So the first assistant message is skipped.
+        # Let's show it at the very bottom.
+        st.chat_message("assistant", avatar="images/logo.png").write(messages[0]["content"])
 
 # --- RIGHT INFO PANEL ---
 with info_col:
