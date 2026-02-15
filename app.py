@@ -174,7 +174,7 @@ with st.sidebar:
 
 # --- AGENT SETUP ---
 @st.cache_resource
-def setup_agent_v2(openai_api_key):
+def setup_agent_v3(openai_api_key):
     # Pass key explicitly to avoid cache staleness
     tools = [search_regulations_tool, calculate_risk_tool]
     llm = ChatOpenAI(temperature=0, model="gpt-4-turbo", openai_api_key=openai_api_key)
@@ -188,7 +188,7 @@ def setup_agent_v2(openai_api_key):
         max_iterations=5,
         early_stopping_method="generate",
         agent_kwargs={
-            "system_message": SystemMessage(content="You are JurisLens, an AI compliance expert. Use provided tools to find regulations and calculate risks. ALWAYS explain your reasoning.")
+            "system_message": SystemMessage(content="You are JurisLens, an AI compliance expert. Use provided tools. For 'RegulationSearch', provide ONLY the 'query' string.")
         }
     )
 
@@ -210,23 +210,20 @@ with chat_col:
             {"role": "assistant", "content": "Hello! I am **JurisLens**. I can search through thousands of regulations or calculate compliance risk.\n\nTry asking: \n- *'What are the AML requirements for crypto in Singapore?'*\n- *'Calculate the risk for a $50k transfer to France.'*"}
         ]
 
-    # Display History within the Chat Column
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.chat_message("user", avatar="👤").write(msg["content"])
-        else:
-            st.chat_message("assistant", avatar="images/logo.png").write(msg["content"])
-
-    # Handle Input
-    if prompt := st.chat_input():
-        st.chat_message("user", avatar="👤").write(prompt)
+    # Handle Input - Pinned to bottom by default
+    if prompt := st.chat_input("Ask a compliance question..."):
+        # Add user message to state
         st.session_state.messages.append({"role": "user", "content": prompt})
+        
+        # We need to process immediately
+        with st.chat_message("user", avatar="👤"):
+             st.write(prompt)
 
         with st.chat_message("assistant", avatar="images/logo.png"):
-            # Cool visualization of the thought process
+             # Cool visualization of the thought process
             with st.status("🤖 AI Processing...", expanded=True) as status:
                 st_callback = StreamlitCallbackHandler(st.container())
-                agent_executor = setup_agent_v2(api_key)
+                agent_executor = setup_agent_v3(api_key)
                 
                 if agent_executor:
                     try:
@@ -240,10 +237,21 @@ with chat_col:
                     st.error("⚠️ Agent not initialized.")
                     response = None
             
-            # Show final answer OUTSIDE the status block so it remains visible
+            # Show final answer
             if response:
                 st.write(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
+
+    st.markdown("### 💬 Conversation History")
+    # Display History in REVERSE order (Latest on Top)
+    # Skip the last transaction if we just added it (to avoid double rendering during the run? 
+    # Actually, Streamlit reruns the whole script. 
+    # So we just render the list reversed.
+    
+    for msg in reversed(st.session_state.messages):
+        role_avatar = "👤" if msg["role"] == "user" else "images/logo.png"
+        with st.chat_message(msg["role"], avatar=role_avatar):
+            st.write(msg["content"])
 
 # --- RIGHT INFO PANEL ---
 with info_col:
