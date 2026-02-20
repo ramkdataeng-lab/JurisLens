@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens - Project Details</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #005A9C;
+            /* Elastic Blue-ish */
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 15px;
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        .tech-stack {
+            background-color: #f8f9fa;
+            border-left: 5px solid #005A9C;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            a {
+                text-decoration: none;
+                color: #000;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            max-width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="logo">
+        <!-- Assuming logo is in images/logo.png relative to this file -->
+        <img src="images/logo.png" alt="JurisLens Logo">
+        <h1>JurisLens: The Autonomous Compliance Agent</h1>
+    </div>
+
+    <h2>1. Executive Summary</h2>
+
+    <h3>The Problem</h3>
+    <p>
+        Global financial institutions face billions of dollars in fines annually due to non-compliance with Anti-Money
+        Laundering (AML) and Know Your Customer (KYC) regulations. These regulations (like the US Patriot Act, EU’s
+        MiCA, or Singapore’s AML Act) are vast, complex, and constantly changing. Compliance officers spend countless
+        hours manually CTRL+F searching through thousands of PDF pages, often missing critical nuances. Standard
+        chatbots fail here because they hallucinate laws or cannot access private, up-to-the-minute regulatory
+        documents.
+    </p>
+
+    <h3>The Solution</h3>
+    <p>
+        <strong>JurisLens</strong> is an <strong>Autonomous Compliance Agent</strong> designed to bridge the gap between
+        legal rigor and AI speed. Unlike a passive chatbot, JurisLens is an "Agent" equipped with specialized tools. It
+        can:
+    </p>
+    <ul>
+        <li><strong>Search & Retrieve:</strong> Actively query a secure Knowledge Base of regulations using Semantic
+            Search to find the exact legal clauses relevant to a user's question.</li>
+        <li><strong>Calculate Risk:</strong> Switch modes to perform deterministic financial risk assessments based on
+            transaction parameters.</li>
+        <li><strong>Cite Sources:</strong> Provide answers grounded in the actual text of the regulations, reducing
+            liability.</li>
+    </ul>
+
+    <h2>2. Technical Architecture & Stack</h2>
+
+    <div class="tech-stack">
+        <h3>Tech Stack</h3>
+        <ul>
+            <li><strong>Knowledge Base:</strong> Elasticsearch (Vector Search + BM25 Hybrid Search)</li>
+            <li><strong>AI Engine:</strong> OpenAI GPT-4 / Elastic AI Assistant</li>
+            <li><strong>Orchestration:</strong> LangChain / Elastic Agent Framework / OpenAI Functions Agent</li>
+        </ul>
+    </div>
+
+    <h3>System Architecture</h3>
+    <div style="text-align: center; margin: 30px 0;">
+        <img src="architecture_diagram.png" alt="System Architecture Diagram"
+            style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;">
+    </div>
+
+    <h3>Key Implementation Details</h3>
+    <ul>
+        <li><strong>Elasticsearch Vector Store:</strong> The backbone of our Knowledge Base. We use Elastic to store
+            vector embeddings of regulatory PDFs. This allows for semantic retrieval (finding "money laundering rules"
+            even if the text says "illicit financing countermeasures").</li>
+        <li><strong>LangChain Agents:</strong> We utilize the <code>OpenAI Functions Agent</code> architecture. This
+            allows the LLM to "decide" whether to search the database, calculate a number, or just chat, depending on
+            the user intent.</li>
+        <li><strong>RAG Pipeline:</strong> A complete ingestion pipeline that chunks patents/laws, embeds them using
+            OpenAI models, and indexes them into Elastic Cloud.</li>
+    </ul>
+
+    <h2>3. Challenges & Lessons Learned</h2>
+
+    <h3>What We Loved</h3>
+    <ol>
+        <li><strong>Elasticsearch Speed:</strong> The retrieval speed for vector search was phenomenal. Even with dense
+            legal texts, Elastic returned relevant chunks in milliseconds, making the chat feel instantaneous.</li>
+        <li><strong>Hybrid Tool Use:</strong> We loved how the Agent could seamlessly combine data from a PDF search
+            with a Python-based risk calculator in a single conversation turn. It felt like "Reasoning," not just text
+            prediction.</li>
+    </ol>
+
+    <h3>Challenges Faced</h3>
+    <p>
+        <strong>Prompt Engineering for Tools:</strong> Getting the agent to consistently call the
+        <code>RiskCalculator</code> with the correct JSON schema (e.g., separating "50k" into <code>50000</code>) was
+        tricky, but moving to Pydantic-based structured tools solved it.
+    </p>
+
+    <h2>4. Project Roadmap</h2>
+    <div style="background-color: #f0f7ff; padding: 15px; border-radius: 8px; border-left: 5px solid #005A9C;">
+        <h3>Phase 1: Enhanced Data Ingestion (Immediate)</h3>
+        <ul>
+            <li><strong>Complete PDF Ingestion Pipeline:</strong> Finalize the ability to upload and process multi-page
+                PDFs, ensuring robust text extraction even from complex formatting.</li>
+            <li><strong>Table Parsing:</strong> Implement logic to specifically detect and parse tables within
+                regulatory documents, preserving row/column relationships for accurate context retention.</li>
+            <li><strong>Refine Vector Indexing:</strong> optimize chunking strategies (e.g., semantic chunking) to
+                improve retrieval precision for legal clauses.</li>
+        </ul>
+
+        <h3>Phase 2: Advanced Reasoning & Validation (Short Term)</h3>
+        <ul>
+            <li><strong>Multi-Step Agent Reasoning:</strong> Enhance the agent's ability to break down complex queries
+                into sub-tasks (e.g., "Find the regulation, then calculate the penalty, then check recent amendments").
+            </li>
+            <li><strong>Confidence Scoring:</strong> Implement a system where the agent provides a confidence score with
+                its answers, flagging low-confidence responses for human review.</li>
+            <li><strong>Citation Linking:</strong> Improve the citation feature to provide direct deep-links to the
+                exact page/paragraph in the source PDF.</li>
+        </ul>
+
+        <h3>Phase 3: Production & Compliance (Long Term)</h3>
+        <ul>
+            <li><strong>Human-in-the-Loop Interface:</strong> Build a review dashboard for compliance officers to
+                validate and correct agent outputs, creating a feedback loop for reinforcement learning.</li>
+            <li><strong>Automated Regulatory Monitoring:</strong> Create a background worker that scrapes official
+                regulatory websites for updates and proactively alerts users to relevant changes.</li>
+            <li><strong>Audit Logging:</strong> Develop immutable logs of all agent reasoning steps and data access for
+                internal compliance audits.</li>
+        </ul>
+    </div>
+
+    <h2>5. Links & Resources</h2>
+    <ul>
+        <li><strong>Code Repository:</strong> <a
+                href="https://github.com/ramkdataeng-lab/JurisLens">https://github.com/ramkdataeng-lab/JurisLens</a>
+        </li>
+        <li><strong>Live Demo:</strong> <a href="https://jurislens.streamlit.app/">https://jurislens.streamlit.app/</a>
+        </li>
+        <li><strong>Demonstration Video:</strong> <em>(Video link to be added)</em></li>
+    </ul>
+
+</body>
+
+</html>

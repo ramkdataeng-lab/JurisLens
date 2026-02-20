@@ -1,7 +1,23 @@
 
+# Python
 .env
 __pycache__/
-*.pdf
+*.pyc
 .DS_Store
 venv/
 .streamlit/secrets.toml
+
+# Next.js / Node
+web-app/node_modules/
+web-app/.next/
+web-app/.env.local
+web-app/.env*.local
+
+# PDFs (large binary files)
+*.pdf
+
+# Audio files (large binary files)
+voiceovers/*.mp3
+
+# Screenshots
+screenshot/

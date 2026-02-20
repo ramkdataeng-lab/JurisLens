@@ -324,14 +324,16 @@ with chat_col:
 
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": """Hello! I am **JurisLens**. I can search through thousands of regulations or calculate compliance risk.
+            {"role": "assistant", "content": """Hello! I am **JurisLens**. I am your autonomous compliance guardian powered by **Elasticsearch**.
+            
+**🎬 Recording Demo Flow:**
+1. **Rule Verification:** *"What is the transfer limit for Zylaria under Project Chimera?"*
+2. **State-Aware Compliance:** *"My client wants to send $4,000 to Zylaria. Is this allowed?"*
+3. **Cross-Domain Sanctions:** *"Can we onboard Ivan Drago as a new client?"*
 
-**🚀 Try this live demo:**
-1. Paste this URL in the sidebar: `https://www.ecfr.gov/current/title-31/part-1010/section-1010.610`
-2. Click **Process & Index**.
-3. Ask: *'What are the enhanced due diligence requirements for foreign correspondent accounts?'*
-"""}
+**Setup:** Make sure to ingest `goliath_bank_internal_policy.pdf` in the sidebar first!"""}
         ]
+
 
     # Handle Input - Pinned to bottom by default
     if prompt := st.chat_input("Ask a compliance question..."):
@@ -458,53 +460,41 @@ with info_col:
     st.markdown("---")
     st.caption("© 2026 JurisLens Inc. | **Privacy Policy**")
     
-# --- HELPER: Architecture Modal (Robust) ---
+# --- HELPER: Architecture Modal (Professional HTML) ---
 def show_architecture_content():
-    import base64
+    import streamlit.components.v1 as components
     
-    # Read Image and Encode
     try:
-        with open("Arc_diagram/architecture.png", "rb") as f:
-            img_bytes = f.read()
-        encoded = base64.b64encode(img_bytes).decode()
+        with open("Arc_diagram/architecture_pro.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
         
-        # Display with CSS precision - Reduced height to ensure legend visibility
-        st.markdown(f"""
-        <div style="display: flex; justify-content: center;">
-            <img src="data:image/png;base64,{encoded}" 
-                 style="max-width: 100%; max-height: 65vh; object-fit: contain; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        </div>
-        """, unsafe_allow_html=True)
+        # Adjust HTML for embedding in Streamlit (remove body padding, make it responsive)
+        html_content = html_content.replace("padding: 40px;", "padding: 0px;")
+        html_content = html_content.replace("width: 1000px;", "width: 100%;")
+        html_content = html_content.replace("height: 700px;", "height: 500px;")
+        
+        components.html(html_content, height=600, scrolling=True)
         
     except FileNotFoundError:
-        st.error("Architecture diagram not found.")
-    
-    # Tech Stack Legend
-    st.markdown("""
-    <div style="text-align: center; margin-top: 10px; padding: 8px; background-color: #f0f2f6; border-radius: 10px;">
-        <p style="margin:0; font-weight: bold; color: #31333F; font-size: 0.9em;">🚀 &nbsp; BUILT WITH &nbsp; 🚀</p>
-        <p style="margin:5px 0 0 0; font-size: 0.8em;">
-            <span style="color:#0077cc;"><b>Streamlit</b></span> (UI) &nbsp;•&nbsp;
-            <span style="color:#F5A623;"><b>Elasticsearch</b></span> (Vector Store) &nbsp;•&nbsp;
-            <span style="color:#00A67E;"><b>LangChain</b></span> (Orchestration) &nbsp;•&nbsp;
-            <span style="color:#7D55C7;"><b>GPT-4</b></span> (Reasoning)
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+        st.error("Architecture HTML not found. Falling back to image.")
+        import base64
+        try:
+            with open("Arc_diagram/architecture.png", "rb") as f:
+                img_bytes = f.read()
+            encoded = base64.b64encode(img_bytes).decode()
+            st.markdown(f'<img src="data:image/png;base64,{encoded}" style="max-width: 100%;">', unsafe_allow_html=True)
+        except:
+             st.error("No architecture assets found.")
 
-# Check which dialog version is available
-if hasattr(st, "dialog"):
-    show_architecture = st.dialog("JurisLens System Architecture", width="large")(show_architecture_content)
-elif hasattr(st, "experimental_dialog"):
-    show_architecture = st.experimental_dialog("JurisLens System Architecture", width="large")(show_architecture_content)
-else:
-    # Fallback for older Streamlit versions (just show in expander)
-    def show_architecture():
-        with st.expander("JurisLens System Architecture", expanded=True):
-            show_architecture_content()
-
-# Call the button inside the layout
+# Update the button call in info_col
 with info_col:
     st.markdown("---")
-    if st.button("🛠️ Architecture", use_container_width=True):
-        show_architecture()
+    if st.button("🛠️ Architecture Pro", use_container_width=True, type="primary"):
+        if hasattr(st, "dialog"):
+            @st.dialog("JurisLens System Architecture", width="large")
+            def show_dialog():
+                show_architecture_content()
+            show_dialog()
+        else:
+            show_architecture_content()
+

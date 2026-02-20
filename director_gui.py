@@ -12,15 +12,16 @@ SCRIPT_HINTS = {
     "02_TheProblem": "ACTION: Show a generic ChatGPT/Grok window. Scroll a PDF manually. Look frustrated.",
     "03_TheBlindSpot": "ACTION: Point to a mock 'Bank Ledger' excel sheet (or just gesture). 'It's blind to state.'",
     "04_Solution": "ACTION: **SWITCH TAB** to JurisLens App. Point to 'Elasticsearch RAG' in sidebar.",
-    "05_Demo_Ingest": "ACTION: Drag & Drop 'goliath_bank_policy.pdf'. Click 'Process & Index'. Point to '✅ KB: 5 Chunks'.",
+    "05_Demo_Ingest": "ACTION: Drag & Drop 'goliath_bank_internal_policy.pdf'. Click 'Process & Index'. Point to '✅ KB: 5 Chunks'.",
     "06_Demo_AskRule": "ACTION: Type: 'What is the limit for Zylaria?'. Hover over the [Relevance: 0.92] citation.",
     "07_Demo_AskAction": "ACTION: Type: 'My client wants to send $4,000 to Zylaria. Is this allowed?'.",
     "08_Demo_Result": "ACTION: WATCH SIDEBAR! Point to 'Scanning...' -> 'Calculating Risk...' -> '❌ BLOCKED'.",
     "09_Scenario2_Sanctions": "ACTION: Type: 'Can we onboard Ivan Drago?'.",
     "10_Scenario2_Result": "ACTION: Show Sidebar '🕵️‍♀️ Scanning Sanctions...'. Point to 'DENIED' result.",
-    "11_Closing": "ACTION: **SHOW ARCHITECTURE DIAGRAM**. Open 'Arc_diagram/architecture_pro.html'.",
-    "12_Adoption": "ACTION: Keep Diagram visible. Zoom in on 'Elasticsearch' node? Fade to Black."
+    "11_Closing": "ACTION: **CLICK '🛠️ Architecture Pro' button in Sidebar.** Let the animated diagram play.",
+    "12_Adoption": "ACTION: Final Close. 'Don't just chat, enforce.' Fade to Black."
 }
+
 
 class DirectorApp:
     def __init__(self, root):
