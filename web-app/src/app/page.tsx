@@ -1,118 +1,156 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useChat } from "ai/react";
-import {
-  ShieldCheck,
-  Search,
-  FileUp,
-  Database,
-  Bot,
-  User,
-  Send,
-  Loader2,
-  History,
-  CheckCircle2,
-  AlertCircle,
-  Gavel,
-  ExternalLink,
-  ChevronRight
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+
+type Message = { role: "user" | "assistant"; content: string };
 
 export default function JurisLensApp() {
-  const [isIngesting, setIsIngesting] = useState(false);
-  const [ingestStatus, setIngestStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "assistant",
+      content: `Hello! I am **JurisLens**. I am your autonomous compliance guardian powered by **Elasticsearch**.\n\n**🎬 Recording Demo Flow:**\n1. **Rule Verification:** *"What is the transfer limit for Zylaria under Project Chimera?"*\n2. **State-Aware Compliance:** *"My client wants to send $4,000 to Zylaria. Is this allowed?"*\n3. **Cross-Domain Sanctions:** *"Can we onboard Ivan Drago as a new client?"*\n\n**Setup:** Make sure to ingest \`goliath_bank_internal_policy.pdf\` in the sidebar first!`,
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [agentStatus, setAgentStatus] = useState("");
+  const [progress, setProgress] = useState(0);
   const [urlInput, setUrlInput] = useState("");
+  const [isIngesting, setIsIngesting] = useState(false);
+  const [ingestStatus, setIngestStatus] = useState<"idle" | "success" | "error">("idle");
   const [indexedFiles, setIndexedFiles] = useState<string[]>([]);
+  const [thumbs, setThumbs] = useState<Record<number, "up" | "down">>({});
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
-  });
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
-  const handleIngest = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleIngest = async () => {
+    const file = fileRef.current?.files?.[0];
+    if (!file && !urlInput) return;
     setIsIngesting(true);
-    setIngestStatus("loading");
-
+    setIngestStatus("idle");
     try {
       const formData = new FormData();
+      if (file) formData.append("file", file);
       if (urlInput) formData.append("url", urlInput);
-
-      const fileInput = document.getElementById("file-upload") as HTMLInputElement;
-      if (fileInput.files?.[0]) {
-        formData.append("file", fileInput.files[0]);
-      }
-
-      const res = await fetch("/api/ingest", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/ingest", { method: "POST", body: formData });
       if (res.ok) {
         setIngestStatus("success");
-        if (urlInput) setIndexedFiles(prev => [...prev, urlInput]);
-        if (fileInput.files?.[0]) setIndexedFiles(prev => [...prev, fileInput.files![0].name]);
+        if (file) setIndexedFiles((p) => [...p, file.name]);
+        if (urlInput) setIndexedFiles((p) => [...p, urlInput]);
         setUrlInput("");
-        fileInput.value = "";
-      } else {
-        setIngestStatus("error");
+        if (fileRef.current) fileRef.current.value = "";
+      } else throw new Error();
+    } catch { setIngestStatus("error"); }
+    finally { setIsIngesting(false); }
+  };
+
+  const handleSubmit = async (e: React.FormEvent | null, overrideInput?: string) => {
+    if (e) e.preventDefault();
+    const text = overrideInput ?? input;
+    if (!text.trim() || isLoading) return;
+    const newMessages: Message[] = [...messages, { role: "user", content: text }];
+    setMessages(newMessages);
+    setInput("");
+    setIsLoading(true);
+    setProgress(0);
+    setAgentStatus("🤖 **AI Agent Active.** Analyzing request...");
+
+    // Animate progress
+    let prog = 0;
+    const ticker = setInterval(() => {
+      prog = Math.min(prog + 2, 92);
+      setProgress(prog);
+    }, 60);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+      const data = await res.json();
+      if (data.content) {
+        setMessages((prev) => [...prev, { role: "assistant", content: data.content }]);
       }
-    } catch (err) {
-      setIngestStatus("error");
+    } catch {
+      setMessages((prev) => [...prev, { role: "assistant", content: "⚠️ Error connecting to agent." }]);
     } finally {
-      setIsIngesting(false);
-      setTimeout(() => setIngestStatus("idle"), 3000);
+      clearInterval(ticker);
+      setProgress(100);
+      setTimeout(() => { setIsLoading(false); setProgress(0); setAgentStatus(""); }, 500);
     }
   };
 
+  const enrichText = (text: string) => {
+    const lower = text.toLowerCase();
+    if (lower.includes("risk level: high") || lower.includes("denied") || lower.includes("blocked") || lower.includes("transgression"))
+      return { prefix: "🔴 📈 HIGH RISK ALERT", color: "text-red-600" };
+    if (lower.includes("risk level: low") || lower.includes("safe") || lower.includes("clear"))
+      return { prefix: "🟢 📉 LOW RISK ASSESSMENT", color: "text-green-600" };
+    if (lower.includes("risk level: medium") || lower.includes("moderate"))
+      return { prefix: "🟠 ⚠️ MEDIUM RISK WARNING", color: "text-orange-500" };
+    return null;
+  };
+
+  const renderContent = (text: string) => {
+    // Bold **text**
+    return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+      part.startsWith("**") && part.endsWith("**")
+        ? <strong key={i}>{part.slice(2, -2)}</strong>
+        : <span key={i}>{part}</span>
+    );
+  };
+
   return (
-    <div className="flex h-screen bg-[#0f172a] text-slate-200 font-sans overflow-hidden">
-      {/* --- Sidebar --- */}
-      <aside className="w-80 bg-[#1e293b] border-r border-slate-700/50 flex flex-col shadow-2xl z-10">
-        <div className="p-6 border-b border-slate-700/50 flex items-center gap-3 bg-gradient-to-r from-slate-900/50 to-transparent">
-          <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-500/20">
-            <ShieldCheck className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white italic">JurisLens</h1>
-            <p className="text-[10px] text-slate-400 font-mono uppercase tracking-widest">Autonomous Compliance</p>
-          </div>
+    <div className="flex h-screen bg-[#f8f9fa] font-sans overflow-hidden" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+
+      {/* ─── LEFT SIDEBAR ─── */}
+      <aside className="w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm z-10 flex-shrink-0">
+        <div className="p-4 border-b border-gray-100">
+          <Image src="/logo.png" alt="JurisLens" width={220} height={60} className="mx-auto" />
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-8 py-8">
-          {/* Knowledge Base Section */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold px-2">
-              <Database className="w-4 h-4" />
-              <h2 className="text-sm uppercase tracking-wider">Storage & Retrieval</h2>
-            </div>
+        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+          {/* Elastic RAG Badge */}
+          <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-100">
+            <p className="text-sm font-bold text-indigo-700">⚡ Elastic RAG</p>
+            <p className="text-xs text-indigo-500 mt-0.5">🔍 <strong>Mode:</strong> Hybrid (Vector + Keyword)</p>
+          </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 space-y-4">
+          {/* Knowledge Base */}
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">📚 Knowledge Base</p>
+            </div>
+            <div className="p-3 space-y-2">
+              {indexedFiles.length > 0 ? (
+                <div className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-200">
+                  ✅ KB: {indexedFiles.length} Item(s) Indexed
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic">ℹ️ Knowledge Base Empty</p>
+              )}
+
               <div>
-                <label className="text-[11px] text-slate-400 uppercase mb-2 block font-medium">Regulation Source (PDF)</label>
-                <label htmlFor="file-upload" className="flex items-center justify-center gap-2 w-full p-3 rounded-lg border-2 border-dashed border-slate-600 hover:border-indigo-500 hover:bg-slate-700/50 transition-all cursor-pointer group">
-                  <FileUp className="w-4 h-4 text-slate-400 group-hover:text-indigo-400" />
-                  <span className="text-xs text-slate-300">Choose File</span>
-                  <input id="file-upload" type="file" className="hidden" />
+                <p className="text-[11px] text-gray-500 mb-1 font-medium">Upload Regulations (PDF)</p>
+                <label className="flex items-center gap-2 p-2 border-2 border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:border-indigo-400 hover:text-indigo-500 cursor-pointer transition-colors">
+                  📄 <span>{fileRef.current?.files?.[0]?.name ?? "Choose File"}</span>
+                  <input ref={fileRef} type="file" accept=".pdf" className="hidden" onChange={() => { }} />
                 </label>
               </div>
 
               <div>
-                <label className="text-[11px] text-slate-400 uppercase mb-2 block font-medium">External Policy (URL)</label>
+                <p className="text-[11px] text-gray-500 mb-1 font-medium">Or Paste Web Link:</p>
                 <input
                   type="text"
-                  placeholder="https://..."
-                  className="w-full bg-slate-900/50 border border-slate-600 rounded-lg p-3 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all"
+                  placeholder="https://www.ecfr.gov/..."
+                  className="w-full text-xs border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                 />
@@ -122,194 +160,193 @@ export default function JurisLensApp() {
                 onClick={handleIngest}
                 disabled={isIngesting}
                 className={cn(
-                  "w-full py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-indigo-900/20",
-                  ingestStatus === "success" ? "bg-emerald-600 text-white" :
-                    ingestStatus === "error" ? "bg-rose-600 text-white" :
-                      "bg-indigo-600 text-white hover:bg-indigo-500"
+                  "w-full py-2 rounded-lg text-sm font-bold text-white transition-all",
+                  isIngesting ? "bg-purple-400" :
+                    ingestStatus === "success" ? "bg-green-500" :
+                      ingestStatus === "error" ? "bg-red-500" :
+                        "bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] hover:from-[#7c3aed] hover:to-[#6d28d9] shadow-md hover:shadow-lg"
                 )}
               >
-                {isIngesting ? <Loader2 className="w-4 h-4 animate-spin" /> :
-                  ingestStatus === "success" ? <CheckCircle2 className="w-4 h-4" /> :
-                    ingestStatus === "error" ? <AlertCircle className="w-4 h-4" /> :
-                      <CheckCircle2 className="w-4 h-4" />}
-                {isIngesting ? "Indexing..." :
-                  ingestStatus === "success" ? "Indexed!" :
-                    ingestStatus === "error" ? "Failed" :
-                      "Process & Index"}
+                {isIngesting ? "⏳ Processing..." : ingestStatus === "success" ? "✅ Indexed!" : ingestStatus === "error" ? "❌ Failed" : "⚡ Process & Index"}
               </button>
             </div>
-          </section>
+          </div>
 
-          {/* Active Documents List */}
-          {indexedFiles.length > 0 && (
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-indigo-400 font-semibold px-2">
-                <History className="w-4 h-4" />
-                <h2 className="text-sm uppercase tracking-wider">Active Corpus</h2>
-              </div>
-              <div className="space-y-2">
-                {indexedFiles.map((file, idx) => (
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    key={idx}
-                    className="p-3 bg-slate-800/30 rounded-lg border border-slate-700/30 text-[11px] flex items-center gap-2 hover:bg-slate-800/60 transition-colors"
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <span className="truncate flex-1 text-slate-300">{file}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </section>
-          )}
+          {/* Clear Chat */}
+          <button
+            onClick={() => setMessages([messages[0]])}
+            className="w-full py-2 text-sm border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+          >
+            🧹 Clear Chat
+          </button>
         </div>
 
-        <div className="p-6 border-t border-slate-700/50 bg-slate-900/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg">JD</div>
-            <div>
-              <p className="text-sm font-bold text-white leading-none mb-1">Jon Doe</p>
-              <p className="text-[10px] text-slate-500 font-medium">Enterprise Admin</p>
-            </div>
-          </div>
+        <div className="p-3 border-t border-gray-100">
+          <p className="text-[10px] text-gray-400 text-center">© 2026 JurisLens Inc. | Privacy Policy</p>
         </div>
       </aside>
 
-      {/* --- Main Chat Area --- */}
-      <main className="flex-1 flex flex-col relative">
-        <header className="h-20 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/50 flex items-center justify-between px-8 z-10">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-slate-400">
-              <Bot className="w-5 h-5 text-indigo-400" />
-              <span className="text-sm font-medium tracking-wide uppercase">JurisLens Expert Agent</span>
+      {/* ─── MAIN AREA (chat + info panel) ─── */}
+      <div className="flex-1 flex overflow-hidden">
+
+        {/* ─── CHAT COLUMN (75%) ─── */}
+        <main className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200 px-6 py-3 shadow-sm">
+            <h1 className="text-2xl font-bold text-gray-800">⚖️ JurisLens AI</h1>
+            <div className="mt-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs rounded-md px-3 py-2">
+              ⚡ <strong>Powered by Elasticsearch:</strong> Hybrid Search (Vector + Keyword) across <strong>Millions</strong> of documents.
             </div>
-            <div className="hidden md:flex items-center gap-2 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded-full border border-emerald-500/20 tracking-tighter uppercase ring-1 ring-emerald-500/20">
-              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Elasticsearch Core Optimized
-            </div>
+            <p className="text-sm text-gray-500 mt-1 italic">Navigate Global Financial Regulations with Autonomous Precision.</p>
           </div>
-        </header>
 
-        {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth">
-          {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center space-y-8 max-w-2xl mx-auto">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="relative"
-              >
-                <div className="absolute -inset-4 bg-indigo-500/20 blur-3xl rounded-full" />
-                <Image src="/logo.png" alt="Logo" width={100} height={100} className="relative opacity-60 grayscale hover:grayscale-0 transition-all duration-500 animate-pulse-slow" />
-              </motion.div>
-              <div className="space-y-4">
-                <h2 className="text-4xl font-black text-white tracking-tight leading-tight">
-                  Autonomous Compliance <br />
-                  <span className="text-indigo-400">Guardian</span>
-                </h2>
-                <p className="text-slate-400 leading-relaxed text-lg">
-                  Ask complex regulatory questions, verify ledger state, and scan international sanctions.
-                  JurisLens bridges the gap between static policy and live enterprise data.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                <button className="p-4 bg-slate-800/40 rounded-2xl border border-slate-700/50 text-left hover:border-indigo-500/50 transition-all group">
-                  <span className="block text-indigo-400 text-xs font-bold uppercase mb-2 tracking-widest leading-none">Scenario: Regulation</span>
-                  <p className="text-sm text-slate-200">"What is the transfer limit under Project Chimera?"</p>
-                </button>
-                <button className="p-4 bg-slate-800/40 rounded-2xl border border-slate-700/50 text-left hover:border-indigo-500/50 transition-all group">
-                  <span className="block text-indigo-400 text-xs font-bold uppercase mb-2 tracking-widest leading-none">Scenario: Risk Ledger</span>
-                  <p className="text-sm text-slate-200">"Check risk for $4,000 transfer to Zylaria."</p>
-                </button>
-              </div>
-            </div>
-          ) : (
-            messages.map((m, idx) => (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                key={m.id}
-                className={cn(
-                  "flex gap-4 max-w-4xl mx-auto",
-                  m.role === "user" ? "flex-row-reverse" : ""
-                )}
-              >
-                <div className={cn(
-                  "p-2 rounded-xl flex-shrink-0 h-10 w-10 flex items-center justify-center shadow-lg",
-                  m.role === "user" ? "bg-slate-700 text-slate-200" : "bg-indigo-600 text-white"
-                )}>
-                  {m.role === "user" ? <User className="w-5 h-5" /> : <ShieldCheck className="w-5 h-5" />}
-                </div>
-
-                <div className={cn(
-                  "flex-1 p-5 rounded-3xl text-sm leading-relaxed shadow-xl border",
-                  m.role === "user"
-                    ? "bg-slate-800 border-slate-700 text-slate-200"
-                    : "bg-gradient-to-br from-indigo-900/40 to-slate-900 border-indigo-500/20 text-slate-100"
-                )}>
-                  {/* Dynamic coloring for results */}
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    {m.content.split('\n').map((line, i) => (
-                      <p key={i} className={cn(
-                        "mb-2 whitespace-pre-wrap",
-                        line.toLowerCase().includes("high risk") || line.toLowerCase().includes("denied") || line.toLowerCase().includes("blocked") ? "text-rose-400 font-bold bg-rose-400/10 p-2 rounded-lg border border-rose-400/20 shadow-[0_0_15px_rgba(251,113,133,0.1)]" :
-                          line.toLowerCase().includes("low risk") || line.toLowerCase().includes("clear") || line.toLowerCase().includes("safe") ? "text-emerald-400 font-bold" : ""
-                      )}>
-                        {line}
-                      </p>
-                    ))}
+          {/* Messages */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
+            {messages.map((msg, i) => {
+              if (msg.role === "user") return (
+                <div key={i} className="flex justify-end">
+                  <div className="flex items-start gap-2 max-w-[80%] flex-row-reverse">
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm flex-shrink-0">👤</div>
+                    <div className="bg-white border border-gray-200 rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm shadow-sm text-gray-800 whitespace-pre-wrap">
+                      {msg.content}
+                    </div>
                   </div>
                 </div>
-              </motion.div>
-            ))
-          )}
+              );
+              const enriched = enrichText(msg.content);
+              return (
+                <div key={i} className="flex flex-col gap-1">
+                  <div className="flex items-start gap-2 max-w-[85%]">
+                    <Image src="/logo.png" alt="JurisLens" width={32} height={32} className="rounded-full flex-shrink-0 border border-gray-200" />
+                    <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm shadow-sm text-gray-700 whitespace-pre-wrap">
+                      {enriched && (
+                        <p className={cn("font-bold text-sm mb-2", enriched.color)}>{enriched.prefix}</p>
+                      )}
+                      {msg.content.split("\n").map((line, li) => (
+                        <p key={li} className={cn("leading-relaxed", line.includes("**") ? "" : "")}>
+                          {renderContent(line)}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Feedback buttons */}
+                  {i > 0 && (
+                    <div className="flex justify-end gap-1 max-w-[85%] pr-1">
+                      <button onClick={() => setThumbs(t => ({ ...t, [i]: "up" }))}
+                        className={cn("text-xs px-1.5 py-0.5 rounded", thumbs[i] === "up" ? "bg-green-100 text-green-600" : "text-gray-400 hover:text-green-500")}>
+                        👍
+                      </button>
+                      <button onClick={() => setThumbs(t => ({ ...t, [i]: "down" }))}
+                        className={cn("text-xs px-1.5 py-0.5 rounded", thumbs[i] === "down" ? "bg-red-100 text-red-600" : "text-gray-400 hover:text-red-500")}>
+                        👎
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
-          {isLoading && (
-            <div className="flex gap-4 max-w-4xl mx-auto items-center">
-              <div className="bg-indigo-600 p-2 rounded-xl h-10 w-10 flex items-center justify-center animate-pulse">
-                <Loader2 className="w-5 h-5 animate-spin" />
+            {/* Loading state */}
+            {isLoading && (
+              <div className="flex flex-col gap-2 max-w-[85%]">
+                <div className="text-xs text-blue-600 font-medium bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+                  {agentStatus}
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-purple-600 h-1.5 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+                </div>
               </div>
-              <div className="flex gap-1">
-                <div className="w-1 h-1 rounded-full bg-slate-500 animate-bounce [animation-delay:-0.3s]" />
-                <div className="w-1 h-1 rounded-full bg-slate-500 animate-bounce [animation-delay:-0.15s]" />
-                <div className="w-1 h-1 rounded-full bg-slate-500 animate-bounce" />
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Input Bar */}
-        <div className="p-8 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent">
-          <form
-            onSubmit={handleSubmit}
-            className="max-w-4xl mx-auto relative group"
-          >
-            <div className="absolute -inset-2 bg-indigo-500/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity rounded-full transition-all duration-500" />
-            <div className="relative bg-slate-800/80 border border-slate-700 flex items-center p-2 rounded-2xl shadow-2xl backdrop-blur-sm group-focus-within:border-indigo-500/50 transition-all ring-1 ring-slate-700/50 group-focus-within:ring-indigo-500/20">
+          <hr className="border-gray-200" />
+          <p className="px-6 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">💬 Ask a Question</p>
+
+          {/* Input */}
+          <div className="p-4 bg-white border-t border-gray-200">
+            <form onSubmit={handleSubmit} className="flex gap-2">
               <input
                 type="text"
-                className="flex-1 bg-transparent border-none focus:outline-none p-4 text-sm text-white placeholder-slate-500"
-                placeholder="Ask JurisLens something... e.g., 'Is a $6,000 transfer to Zylaria allowed?'"
                 value={input}
-                onChange={handleInputChange}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask a compliance question..."
+                className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50"
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="bg-indigo-600 p-4 rounded-xl text-white hover:bg-indigo-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/30 active:scale-95"
+                className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 hover:shadow-lg transition-all"
               >
-                <Send className="w-5 h-5" />
+                ↗
               </button>
+            </form>
+
+            {/* Quick prompts */}
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {["What is the limit for Zylaria?", "Send $4,000 to Zylaria. Is this allowed?", "Can we onboard Ivan Drago?"].map((q) => (
+                <button key={q} onClick={() => handleSubmit(null, q)}
+                  className="text-[11px] bg-gray-100 hover:bg-purple-50 hover:text-purple-700 border border-gray-200 hover:border-purple-300 rounded-full px-3 py-1 text-gray-500 transition-colors">
+                  {q}
+                </button>
+              ))}
             </div>
-          </form>
-          <div className="mt-4 flex justify-center gap-6 text-[10px] text-slate-500 uppercase font-bold tracking-widest opacity-50">
-            <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> SOC2 Compliant</span>
-            <span className="flex items-center gap-1"><Gavel className="w-3 h-3" /> Audit Logged</span>
-            <span className="flex items-center gap-1 tracking-tighter"><Image src="/logo.png" alt="E" width={10} height={10} className="filter grayscale" /> Powered by Elastic Cloud</span>
           </div>
-        </div>
-      </main>
+        </main>
+
+        {/* ─── RIGHT INFO PANEL (25%) ─── */}
+        <aside className="w-64 bg-white border-l border-gray-200 flex flex-col overflow-y-auto flex-shrink-0">
+          <div className="p-4 space-y-4">
+
+            <div>
+              <p className="text-sm font-bold text-gray-700 mb-2">⚡ Engine</p>
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-800 space-y-1">
+                <p>🔍 <strong>Search:</strong> Elasticsearch Vector Store</p>
+                <p>🤖 <strong>Model:</strong> GPT-4 Turbo</p>
+                <p>🔗 <strong>Framework:</strong> LangChain Agents</p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-bold text-gray-700 mb-2">🏆 Why Elastic?</p>
+              <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-800 space-y-1.5">
+                <p><strong>⚡ Powered by Elasticsearch RAG</strong></p>
+                <p>Unlike chatbots limited by context size:</p>
+                <p>📦 <strong>Scale:</strong> Index <strong>thousands</strong> of PDFs, not just one.</p>
+                <p>🎯 <strong>Precision:</strong> Find exact regulations in milliseconds.</p>
+                <p>🔒 <strong>Privacy:</strong> Data stays in your private vectors.</p>
+              </div>
+            </div>
+
+            {/* Active Docs */}
+            {indexedFiles.length > 0 && (
+              <div>
+                <hr className="border-gray-200 mb-3" />
+                <p className="text-sm font-bold text-gray-700 mb-2">🗂️ Active Docs</p>
+                <div className="space-y-1.5">
+                  {indexedFiles.map((f, i) => (
+                    <div key={i} className="bg-green-50 border border-green-200 rounded-lg px-2.5 py-1.5 text-xs text-green-700 flex items-center gap-2">
+                      <span>📄</span><span className="truncate">{f}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <hr className="border-gray-200" />
+
+            {/* Architecture Button */}
+            <button
+              onClick={() => window.open("/Arc_diagram/architecture_pro.html", "_blank")}
+              className="w-full py-2 text-sm font-bold bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white rounded-lg hover:shadow-md transition-all"
+            >
+              🛠️ Architecture
+            </button>
+
+            <hr className="border-gray-200" />
+            <p className="text-[10px] text-gray-400 text-center">© 2026 JurisLens Inc. | <strong>Privacy Policy</strong></p>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
