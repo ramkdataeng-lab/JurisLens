@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { ElasticsearchStore } from "@langchain/community/vectorstores/elasticsearch";
+import { ElasticVectorSearch } from "@langchain/community/vectorstores/elasticsearch";
 import { Client } from "@elastic/elasticsearch";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "No file or URL provided" }, { status: 400 });
         }
 
-        let documents = [];
+        let documents: import("langchain/document").Document[] = [];
+
 
         if (file) {
             const arrayBuffer = await file.arrayBuffer();
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
         });
 
         const embeddings = new OpenAIEmbeddings();
-        const vectorStore = new ElasticsearchStore(embeddings, {
+        const vectorStore = new ElasticVectorSearch(embeddings, {
             client,
             indexName: "jurislens_docs",
         });

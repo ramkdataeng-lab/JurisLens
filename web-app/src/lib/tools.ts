@@ -1,7 +1,7 @@
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 import { Client } from "@elastic/elasticsearch";
-import { ElasticsearchStore } from "@langchain/community/vectorstores/elasticsearch";
+import { ElasticVectorSearch } from "@langchain/community/vectorstores/elasticsearch";
 import { OpenAIEmbeddings } from "@langchain/openai";
 
 // --- Tool 1: Regulation Search ---
@@ -26,7 +26,7 @@ export const searchRegulationsTool = new DynamicStructuredTool({
             });
 
             const embeddings = new OpenAIEmbeddings();
-            const vectorStore = new ElasticsearchStore(embeddings, {
+            const vectorStore = new ElasticVectorSearch(embeddings, {
                 client,
                 indexName: "jurislens_docs",
             });
