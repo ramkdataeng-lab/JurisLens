@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens | The Master Video Script</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00bfb3;
+            /* Elastic Teal */
+            --bg: #0b0f19;
+            --text: #ffffff;
+            --accent: #f04e98;
+            --subtext: #94a3b8;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(to right, var(--primary), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .meta {
+            color: var(--subtext);
+            font-size: 1.1rem;
+            margin-top: 10px;
+            font-weight: 400;
+        }
+
+        .scene {
+            margin-bottom: 100px;
+            scroll-margin-top: 50px;
+        }
+
+        .timestamp {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: rgba(240, 78, 152, 0.1);
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .visual-cue {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 12px 12px 0;
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .script-text {
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        .script-text strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 100px 0;
+            color: var(--subtext);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Highlight specific lines for emphasis */
+        .emphasis {
+            border-bottom: 2px solid var(--accent);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .script-text {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>JurisLens Master Script</h1>
+            <p class="meta">Target Duration: 3m 30s | Hackathon Edition</p>
+        </header>
+
+        <!-- Scene 1 -->
+        <div class="scene">
+            <span class="timestamp">0:00 - 0:40</span>
+            <div class="visual-cue">VISUAL: Split screen. Left: Standard Chatbot. Right: Busy Bank Trading Floor.</div>
+            <div class="script-text">
+                "Standard LLMs have an <strong>intelligence gap</strong>.
+
+                I can feed 50 pages of banking regulations into a chatbot, asking:
+                <em>'Is a $4,000 transfer to Zylaria allowed?'</em>,
+
+                and it will say <strong>YES</strong>.
+
+                Why? Because the rulebook says the limit is $5,000.
+
+                But the chatbot is <strong>state-blind</strong>. It doesn't know that this specific client
+                <strong>already wire-transferred $2,500 this morning</strong>.
+
+                In the real world, compliance isn't just about reading rules. It's about knowing the <strong>State of
+                    the Enterprise</strong>.
+
+                And that is where generic AI fails catastrophically."
+            </div>
+        </div>
+
+        <!-- Scene 2 -->
+        <div class="scene">
+            <span class="timestamp">0:40 - 1:10</span>
+            <div class="visual-cue">VISUAL: JurisLens Logo animating. "ELSER v2 + ES|QL" badge glowing.</div>
+            <div class="script-text">
+                "Introducing <strong>JurisLens</strong>:
+
+                An Autonomous Compliance Agent powered by the <strong>Elastic Agent Builder</strong>.
+
+                Unlike basic RAG, JurisLens uses <strong>ELSER v2</strong>—Elastic's latest semantic model—to understand
+                the <strong>intent</strong> of complex legal statutes.
+
+                It's not matching keywords; it's <strong>understanding law</strong>."
+            </div>
+        </div>
+
+        <!-- Scene 3 -->
+        <div class="scene">
+            <span class="timestamp">1:10 - 2:20</span>
+            <div class="visual-cue">VISUAL: Screen recording of JurisLens Web App. Zoom in on ES|QL Query block.</div>
+            <div class="script-text">
+                "Let's see this in action.
+
+                We've ingested a bank policy PDF into our Elastic Knowledge Base.
+
+                I ask: <em>'My client wants to send $4,000 to Zylaria. Is this allowed?'</em>
+
+                Watch the terminal. JurisLens doesn't just guess.
+
+                It executes a <strong>live ES|QL query</strong> against our transaction index.
+
+                In milliseconds, it retrieves the client's total daily exposure.
+
+                Boom. <strong>DENIED.</strong>
+
+                JurisLens caught the violation. It says:
+                <em>'Blocked. ES|QL Audit shows prior $2,500 transfer today. Total exposure $6,500 exceeds the $5,000
+                    limit.'</em>
+
+                The agent <strong>synthesized</strong> the static rule from ELSER with the dynamic state from ES|QL.
+
+                That is the power of true <strong>Agentic reasoning</strong>."
+            </div>
+        </div>
+
+        <!-- Scene 4 -->
+        <div class="scene">
+            <span class="timestamp">2:20 - 2:45</span>
+            <div class="visual-cue">VISUAL: User typing: "Can we onboard Ivan Drago?". Status: "Scanning Sanctions..."
+            </div>
+            <div class="script-text">
+                "JurisLens acts as a universal orchestrator.
+
+                We can verify rules, audit transactions, and scan for sanctions in a single conversation.
+
+                It intelligently switches tools, scanning global watchlists.
+
+                One unified agent protects <strong>multiple lines of defense</strong>."
+            </div>
+        </div>
+
+        <!-- Scene 5 -->
+        <div class="scene">
+            <span class="timestamp">2:45 - 3:30</span>
+            <div class="visual-cue">VISUAL: Architecture Diagram showing ELSER v2, ES|QL, and LangChain.</div>
+            <div class="script-text">
+                "By leveraging <strong>Elasticsearch</strong> as our retrieval backbone, we achieve zero hallucination
+                and enterprise-grade scale.
+
+                We provide exact citations down to the page number for every claim, creating a bulletproof audit trail.
+
+                Don't just chat with your data. <strong>Enforce it.</strong>
+
+                This is <strong>JurisLens</strong>."
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>End of Script. Good Luck, Director!</p>
+            <p>© 2026 JurisLens Inc.</p>
+        </div>
+    </div>
+</body>
+
+</html>
