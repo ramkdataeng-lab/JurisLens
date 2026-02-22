@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+body {
+  background-color: #F0F2F5;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(186,100%,94%,1) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(208,100%,95%,1) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(177,100%,94%,1) 0, transparent 50%);
+  background-attachment: fixed;
+}
+
 /* Smooth scrollbar */
 ::-webkit-scrollbar {
   width: 4px;

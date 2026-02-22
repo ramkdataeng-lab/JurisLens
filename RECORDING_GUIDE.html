@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens Recording Guide | Elastic Agent Builder Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --elastic-blue: #005571;
+            --elastic-teal: #00bfb3;
+            --elastic-yellow: #fec514;
+            --elastic-pink: #f04e98;
+            --bg: #f8f9fc;
+            --card: #ffffff;
+            --text: #1a1c21;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            color: var(--elastic-blue);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: var(--elastic-teal);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .checklist {
+            background: var(--card);
+            border-left: 5px solid var(--elastic-teal);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+
+        .checklist h2 {
+            margin-top: 0;
+            color: var(--elastic-blue);
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            color: var(--elastic-teal);
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .timeline {
+            position: relative;
+            margin-top: 50px;
+        }
+
+        .scene {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+            border: 1px solid #eee;
+        }
+
+        .scene:hover {
+            transform: translateY(-5px);
+        }
+
+        .scene-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .scene-title {
+            color: var(--elastic-blue);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .timestamp {
+            background: var(--elastic-blue);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .meta-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .meta-box {
+            background: #fdfdfd;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .meta-label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .instruction {
+            margin-top: 15px;
+        }
+
+        .instruction-label {
+            color: var(--elastic-pink);
+            font-weight: 700;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .audio-file {
+            font-family: monospace;
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #ddd;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .badge-pro {
+            background: linear-gradient(90deg, var(--elastic-blue), var(--elastic-teal));
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>JurisLens <span class="badge-pro">PRO</span></h1>
+            <div class="tagline">3-Minute Video Pitch Recording Guide</div>
+            <p>Synchronized for ELSER v2 & ES|QL Demonstration</p>
+        </header>
+
+        <section class="checklist">
+            <h2>🛠️ Pre-Recording Checklist</h2>
+            <ul>
+                <li><strong>Clear State:</strong> Reset your Elastic index or ensure high-quality test data is ready.
+                </li>
+                <li><strong>Vercel UI:</strong> Open live app at <code>jurislens.vercel.app</code>.</li>
+                <li><strong>Document Ready:</strong> Have <code>goliath_bank_internal_policy.pdf</code> open in a
+                    browser tab.</li>
+                <li><strong>Resolution:</strong> Set recording software to 1080p (1920x1080).</li>
+                <li><strong>Voiceovers:</strong> Ensure all 12 .mp3 files in <code>voiceovers/</code> are generated.
+                </li>
+            </ul>
+        </section>
+
+        <div class="timeline">
+            <!-- Scene 1 -->
+            <div class="scene">
+                <div class="scene-header">
+                    <span class="scene-title">1. The hook & The intelligence gap</span>
+                    <span class="timestamp">0:00 - 0:40</span>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-box">
+                        <span class="meta-label">Audio Files</span>
+                        <span class="meta-value"><span class="audio-file">01_Intro.mp3</span>, <span
+                                class="audio-file">02_TheProblem.mp3</span></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">Visual Focus</span>
+                        <span class="meta-value">Standard AI Interface vs. JurisLens</span>
+                    </div>
+                </div>
+                <div class="instruction">
+                    <span class="instruction-label">ACTION:</span> Type the Zylaria question into GPT. Show it failing
+                    because it can't see "State". Then open the JurisLens tab.
+                </div>
+            </div>
+
+            <!-- Scene 2 -->
+            <div class="scene">
+                <div class="scene-header">
+                    <span class="scene-title">2. Introducing ELSER v2</span>
+                    <span class="timestamp">0:40 - 1:10</span>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-box">
+                        <span class="meta-label">Audio Files</span>
+                        <span class="meta-value"><span class="audio-file">03_TheBlindSpot.mp3</span>, <span
+                                class="audio-file">04_Solution.mp3</span></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">Visual Focus</span>
+                        <span class="meta-value">Elastic Agent Builder Pro Sidebar Badge</span>
+                    </div>
+                </div>
+                <div class="instruction">
+                    <span class="instruction-label">ACTION:</span> Hover over the "ELSER v2" badge. Highlight the
+                    "Semantic Search" capability in the sidebar.
+                </div>
+            </div>
+
+            <!-- Scene 3 -->
+            <div class="scene">
+                <div class="scene-header">
+                    <span class="scene-title">3. Semantic Ingestion</span>
+                    <span class="timestamp">1:10 - 1:30</span>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-box">
+                        <span class="meta-label">Audio Files</span>
+                        <span class="meta-value"><span class="audio-file">05_Demo_Ingest.mp3</span></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">Visual Focus</span>
+                        <span class="meta-value">PDF Upload & Processing Status</span>
+                    </div>
+                </div>
+                <div class="instruction">
+                    <span class="instruction-label">ACTION:</span> Upload the Goliath Bank Policy PDF. Click "Process &
+                    Index". Slow down to show the "✅ Indexed!" success message.
+                </div>
+            </div>
+
+            <!-- Scene 4 -->
+            <div class="scene" style="border: 2px solid var(--elastic-teal);">
+                <div class="scene-header">
+                    <span class="scene-title">4. THE KILLER DEMO: ES|QL Audit</span>
+                    <span class="timestamp">1:30 - 2:25</span>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-box">
+                        <span class="meta-label">Audio Files</span>
+                        <span class="meta-value"><span class="audio-file">06</span>, <span class="audio-file">07</span>,
+                            <span class="audio-file">08_Demo_Result.mp3</span></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">Visual Focus</span>
+                        <span class="meta-value">The ES|QL Query String & High Risk Warning</span>
+                    </div>
+                </div>
+                <div class="instruction">
+                    <span class="instruction-label">ACTION:</span> Ask the $4,000 transfer question. **CRITICAL:** Wait
+                    for the agent to finish. Scroll down to highlight the ES|QL Query Code Block in the chat.
+                </div>
+            </div>
+
+            <!-- Scene 5 -->
+            <div class="scene">
+                <div class="scene-header">
+                    <span class="scene-title">5. Intent-Based Orchestration</span>
+                    <span class="timestamp">2:25 - 2:45</span>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-box">
+                        <span class="meta-label">Audio Files</span>
+                        <span class="meta-value"><span class="audio-file">09</span>, <span
+                                class="audio-file">10_Scenario2_Result.mp3</span></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">Visual Focus</span>
+                        <span class="meta-value">Tool Switching (Sanctions Checker)</span>
+                    </div>
+                </div>
+                <div class="instruction">
+                    <span class="instruction-label">ACTION:</span> Click the "Onboard Ivan Drago" quick-prompt. Display
+                    the "🕵️‍♀️ Scanning Sanctions..." status visual.
+                </div>
+            </div>
+
+            <!-- Scene 6 -->
+            <div class="scene">
+                <div class="scene-header">
+                    <span class="scene-title">6. Tech Stack & Architecture</span>
+                    <span class="timestamp">2:45 - 3:00</span>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-box">
+                        <span class="meta-label">Audio Files</span>
+                        <span class="meta-value"><span class="audio-file">11_Closing.mp3</span>, <span
+                                class="audio-file">12_Adoption.mp3</span></span>
+                    </div>
+                    <div class="meta-box">
+                        <span class="meta-label">Visual Focus</span>
+                        <span class="meta-value">Architecture Diagram Modal</span>
+                    </div>
+                </div>
+                <div class="instruction">
+                    <span class="instruction-label">ACTION:</span> Open the "🛠️ Architecture" modal. Show the
+                    Citations/Source links at the end of the chat. Fade to logo.
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>⚖️ JurisLens | Build context-driven agents fast with Elasticsearch</p>
+            <p>© 2026 JurisLens Inc. & Elastic Hackathon Team</p>
+        </footer>
+    </div>
+</body>
+
+</html>
