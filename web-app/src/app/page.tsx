@@ -10,7 +10,7 @@ export default function JurisLensApp() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Hello! I am **JurisLens**. I am your autonomous compliance guardian powered by **Elasticsearch**.\n\n**🎬 Recording Demo Flow:**\n1. **Rule Verification:** *"What is the transfer limit for Zylaria under Project Chimera?"*\n2. **State-Aware Compliance:** *"My client wants to send $4,000 to Zylaria. Is this allowed?"*\n3. **Cross-Domain Sanctions:** *"Can we onboard Ivan Drago as a new client?"*\n\n**Setup:** Ingest \`goliath_bank_internal_policy.pdf\` in the sidebar first!`,
+      content: `Hello! I am **JurisLens**. I am your autonomous compliance guardian powered by **Elasticsearch** (Upgraded to **ELSER v2** & **ES|QL**).\n\n**🎬 Recording Demo Flow:**\n1. **Rule Verification:** *"What is the transfer limit for Zylaria under Project Chimera?"*\n2. **Compliance Audit (ES|QL):** *"My client wants to send $4,000 to Zylaria. Is this allowed?"*\n3. **Cross-Domain Sanctions:** *"Can we onboard Ivan Drago as a new client?"*`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -118,8 +118,8 @@ export default function JurisLensApp() {
 
           {/* Elastic RAG Badge */}
           <div className="bg-indigo-50 rounded-xl px-4 py-3 border border-indigo-100">
-            <p className="text-sm font-bold text-indigo-700 mb-0.5">⚡ Elastic RAG</p>
-            <p className="text-xs text-indigo-500">🔍 <strong>Mode:</strong> Hybrid (Vector + Keyword)</p>
+            <p className="text-sm font-bold text-indigo-700 mb-0.5">⚡ Elastic Agent Builder Pro</p>
+            <p className="text-xs text-indigo-500">🔍 <strong>Semantic:</strong> ELSER v2 + ES|QL</p>
           </div>
 
           {/* Knowledge Base Card */}

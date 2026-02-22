@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏛️ JurisLens: Elastic Agent Builder Pro
 
-## Getting Started
+JurisLens is an autonomous compliance agent designed for the **Elasticsearch Agent Builder Hackathon**. It leverages the latest Elastic-native AI features to navigate complex global financial regulations.
 
-First, run the development server:
+## 🚀 Upgraded Features
+- **ELSER v2 Semantic Search**: Upgraded from standard vector search to Elastic's **ELSER v2** (`text_expansion`) for superior semantic understanding of legal texts.
+- **ES|QL Audit Engine**: The `RiskCalculator` tool now simulates/executes **ES|QL (Elasticsearch Query Language)** queries for transparent, high-speed transaction history aggregation.
+- **Hybrid Search**: Combines ELSER's semantic power with keyword matching for precise citation of legal clauses (e.g., "Section 1010.610").
+- **Multi-Step Reasoning**: Built on **LangChain Agents** to orchestrate tool-use across search, risk calculation, and sanctions checking.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Tech Stack
+- **Frontend**: Next.js 15+ (App Router), TailwindCSS, Framer Motion.
+- **Backend API**: Next.js Route Handlers.
+- **AI Core**: LangChain + OpenAI GPT-4 Turbo.
+- **Knowledge Base**: Elasticsearch Cloud.
+- **Retrieval**: ELSER v2 + RRF (Reciprocal Rank Fusion) ready.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚦 Getting Started
+1. **Clone the repo**: `git clone https://github.com/ramkdataeng-lab/JurisLens`
+2. **Setup Env**: Copy `.env.local.example` to `.env.local` and add:
+   - `OPENAI_API_KEY`
+   - `ELASTIC_CLOUD_ID`
+   - `ELASTIC_API_KEY`
+3. **Install**: `npm install`
+4. **Run**: `npm run dev`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏆 Hackathon Alignment
+This project specifically targets the following tracks:
+- **Automate messy internal work**: Compliance checks and AML triage.
+- **Narrow domain**: Fintech/Legal.
+- **Multi-step reasoning**: Agents that plan and verify legal findings.

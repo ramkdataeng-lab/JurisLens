@@ -48,11 +48,22 @@ export async function POST(req: NextRequest) {
         }
 
         const splitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 1000,
-            chunkOverlap: 100,
+            chunkSize: 1200,
+            chunkOverlap: 200,
+            // Optimization for legal text: try to split on sections or double newlines first
+            separators: ["\n\n", "\n", " ", ""],
         });
 
-        const docs = await splitter.splitDocuments(documents);
+        // Ensure every doc has a source and page in metadata for Citations
+        const docs = (await splitter.splitDocuments(documents)).map((doc, idx) => {
+            doc.metadata = {
+                ...doc.metadata,
+                source: file ? file.name : (url || "Web Source"),
+                chunk_id: idx,
+                ingested_at: new Date().toISOString()
+            };
+            return doc;
+        });
 
         const elasticCloudId = process.env.ELASTIC_CLOUD_ID;
         const elasticApiKey = process.env.ELASTIC_API_KEY;
@@ -66,12 +77,15 @@ export async function POST(req: NextRequest) {
             auth: { apiKey: elasticApiKey },
         });
 
+        // Initialize Vector Store
         const embeddings = new OpenAIEmbeddings();
         const vectorStore = new ElasticVectorSearch(embeddings, {
             client,
             indexName: "jurislens_docs",
         });
 
+        // Index the documents
+        console.log(`📦 Indexing ${docs.length} semantic chunks to Elasticsearch...`);
         await vectorStore.addDocuments(docs);
 
         return NextResponse.json({ success: true, count: docs.length });
