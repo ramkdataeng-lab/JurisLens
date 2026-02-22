@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens Enterprise Architecture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --dark: #1e1e2e;
+            --light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--dark);
+            margin-bottom: 50px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .diagram-container {
+            position: relative;
+            width: 1000px;
+            height: 700px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Connecting Lines (SVG Overlay) */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        path {
+            fill: none;
+            stroke: #d1d5db;
+            stroke-width: 2;
+            stroke-dasharray: 8;
+            animation: flow 20s linear infinite;
+        }
+
+        @keyframes flow {
+            from {
+                stroke-dashoffset: 100;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Nodes */
+        .node {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            z-index: 2;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 10px;
+            background: var(--primary);
+        }
+
+        .title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 0.85em;
+            color: #6b7280;
+        }
+
+        /* Specific Node Tuning */
+        #user {
+            grid-row: 1;
+            grid-column: 2;
+            border-top: 4px solid var(--dark);
+        }
+
+        #agent {
+            grid-row: 2;
+            grid-column: 2;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+            border: 2px solid #28a745;
+            transform: scale(1.1);
+        }
+
+        #es {
+            grid-row: 3;
+            grid-column: 1;
+            border-bottom: 4px solid #f59e0b;
+        }
+
+        #risk {
+            grid-row: 3;
+            grid-column: 2;
+            border-bottom: 4px solid #dc3545;
+        }
+
+        #sanctions {
+            grid-row: 3;
+            grid-column: 3;
+            border-bottom: 4px solid #dc3545;
+        }
+
+        #llm {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            border-left: 4px solid #0d6efd;
+            background: #f8faff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>JurisLens Enterprise Architecture</h1>
+
+    <div class="diagram-container">
+        <svg class="connections" id="svg-connections"></svg>
+
+        <div id="user" class="node">
+            <div class="icon-box" style="background: #343a40"><i class="fas fa-user-tie"></i></div>
+            <div class="title">Compliance Officer</div>
+            <div class="subtitle">Uploads PDF & Ask Questions</div>
+        </div>
+
+        <div id="agent" class="node">
+            <div class="icon-box" style="background: #28a745; width: 70px; height: 70px; font-size: 32px;"><i
+                    class="fas fa-robot"></i></div>
+            <div class="title" style="font-size: 1.2em;">JurisLens Orchestrator</div>
+            <div class="subtitle">LangChain Agent</div>
+        </div>
+
+        <div id="llm" class="node">
+            <div class="icon-box" style="background: #0d6efd"><i class="fas fa-brain"></i></div>
+            <div class="title">OpenAI GPT-4</div>
+        </div>
+
+        <div id="es" class="node">
+            <div class="icon-box" style="background: #f59e0b"><i class="fas fa-search"></i></div>
+            <div class="title">Elasticsearch</div>
+            <div class="subtitle">Hybrid RAG</div>
+        </div>
+
+        <div id="risk" class="node">
+            <div class="icon-box" style="background: #dc3545"><i class="fas fa-coins"></i></div>
+            <div class="title">Risk Ledger</div>
+            <div class="subtitle">Internal DB</div>
+        </div>
+
+        <div id="sanctions" class="node">
+            <div class="icon-box" style="background: #6610f2"><i class="fas fa-ban"></i></div>
+            <div class="title">Sanctions List</div>
+            <div class="subtitle">Global Watchlist</div>
+        </div>
+    </div>
+
+    <script>
+        function connect(id1, id2, color, dashed = false) {
+            const elem1 = document.getElementById(id1);
+            const elem2 = document.getElementById(id2);
+            const svg = document.getElementById('svg-connections');
+
+            const rect1 = elem1.getBoundingClientRect();
+            const rect2 = elem2.getBoundingClientRect();
+            const svgRect = svg.getBoundingClientRect();
+
+            // Calculate relative coordinates
+            const x1 = rect1.left + rect1.width / 2 - svgRect.left;
+            const y1 = rect1.top + rect1.height / 2 - svgRect.top;
+            const x2 = rect2.left + rect2.width / 2 - svgRect.left;
+            const y2 = rect2.top + rect2.height / 2 - svgRect.top;
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', color || '#cbd5e1');
+            line.setAttribute('stroke-width', '3');
+            if (dashed) line.setAttribute('stroke-dasharray', '5,5');
+
+            svg.appendChild(line);
+        }
+
+        function drawLines() {
+            document.getElementById('svg-connections').innerHTML = '';
+            connect('user', 'agent', '#343a40');
+            connect('agent', 'llm', '#0d6efd', true);
+            connect('agent', 'es', '#f59e0b');
+            connect('agent', 'risk', '#dc3545');
+            connect('agent', 'sanctions', '#6610f2');
+        }
+
+        window.onload = drawLines;
+        window.onresize = drawLines;
+    </script>
+
+</body>
+
+</html>

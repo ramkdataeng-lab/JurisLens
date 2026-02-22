@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens Architecture</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 50px;
+            background: #f4f4f4;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>JurisLens System Architecture</h2>
+        <div class="mermaid">
+            flowchart TD
+            User((User))
+            UI[Streamlit UI]
+            Agent{JurisLens Agent<br />LangChain}
+
+            ES[(Elasticsearch<br />Vector Store)]
+            Risk[(Risk Ledger<br />SQL Database)]
+            Sanctions[(Sanctions List<br />Global API)]
+            LLM[OpenAI GPT-4]
+
+            User -->|1. Upload PDF & Query| UI
+            UI -->|2. Invoke Agent| Agent
+
+            Agent -->|3. Plan & Reason| LLM
+
+            Agent -->|4. Hybrid Search| ES
+            ES -.->|Context| Agent
+
+            Agent -->|5. Ledger Check| Risk
+            Risk -.->|Prior Transactions| Agent
+
+            Agent -->|6. Entity Check| Sanctions
+            Sanctions -.->|Watchlist Status| Agent
+
+            Agent -->|7. Final Decision| UI
+            UI -->|8. Display Result| User
+
+            classDef purple fill:#6f42c1,stroke:#fff,color:white;
+            classDef green fill:#28a745,stroke:#fff,color:white;
+            classDef yellow fill:#ffc107,stroke:#333;
+            classDef blue fill:#007bff,stroke:#fff,color:white;
+            classDef red fill:#dc3545,stroke:#fff,color:white;
+
+            class UI purple;
+            class Agent green;
+            class ES yellow;
+            class LLM blue;
+            class Risk,Sanctions red;
+        </div>
+    </div>
+    <script>mermaid.initialize({ startOnLoad: true });</script>
+</body>
+
+</html>
