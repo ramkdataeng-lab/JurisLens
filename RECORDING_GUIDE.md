@@ -1,83 +1,81 @@
-# 🎬 JurisLens: Professional Demo Recording Guide
+# 🎬 JurisLens: The Director's Recording Bible
 
-This guide details exactly how to record your 3-minute hackathon demo. We have synchronized the UI actions with the **12 Audio Segments** generated in the `voiceovers/` folder.
-
----
-
-## 🛠️ Pre-Recording Checklist
-1. **Reset State**: Clear your Elasticsearch index if needed, or ensure the files are ready to be uploaded fresh.
-2. **Open Documents**: Have the `goliath_bank_internal_policy.pdf` open in a separate window to show it briefly.
-3. **Environment**: Use the **Live Vercel App** at `https://jurislens.vercel.app/`.
-4. **Resolution**: Record in **1080p (1920x1080)** for maximum clarity.
+This guide is your step-by-step "Director's Cut" for recording the winning hackathon demo. Every second counts. Follow these specific actions to sync perfectly with the generated audio.
 
 ---
 
-## 📽️ Scene-by-Scene Director's Cut
-
-### Phase 1: The Hook (0:00 - 0:40)
-*   **Audio**: `01_Intro`, `02_TheProblem`
-*   **Visual**: 
-    *   Start on the JurisLens home screen.
-    *   Briefly show a PDF of banking regulations (dense text).
-    *   **Action**: Type into JurisLens: *"My client wants to send $4,000 to Zylaria. Is this allowed?"*
-    *   **Action**: Switch to a standard ChatGPT/Grok tab. Show it saying "Yes, the limit is $5,000. It's safe." (Or just point to your previous chat history).
-
-### Phase 2: The Solution (0:40 - 1:10)
-*   **Audio**: `03_TheBlindSpot`, `04_Solution`
-*   **Visual**:
-    *   Zoom in on the **"Elastic Agent Builder Pro"** badge in the sidebar.
-    *   Transition back to JurisLens. Show the "Powered by ELSER v2" text.
-    *   **Action**: Hover over the sidebar sections to show the "Knowledge Base" and "Engine" details.
-
-### Phase 3: The Demo - Ingest (1:10 - 1:30)
-*   **Audio**: `05_Demo_Ingest`
-*   **Visual**:
-    *   **Action**: Select `goliath_bank_internal_policy.pdf`.
-    *   **Action**: Click **"⚡ Process & Index"**. 
-    *   Wait for the "✅ Indexed!" success message. 
-
-### Phase 4: The Demo - Reasoning (1:30 - 2:00)
-*   **Audio**: `06_Demo_AskRule`, `07_Demo_AskAction`
-*   **Visual**:
-    *   **Action**: Type *"What is the transfer limit for Zylaria under Project Chimera?"*
-    *   **Result**: Show the response with the citation: `[Source: Policy.pdf (Page 5)]`.
-    *   **Action**: NOW, type the killer question: *"My client wants to send $4,000 to Zylaria. Is this allowed?"*
-
-### Phase 5: The "Wow Factor" - ES|QL Audit (2:00 - 2:25)
-*   **Audio**: `08_Demo_Result`
-*   **Visual**:
-    *   **CRITICAL**: Zoom in on the response as it appears.
-    *   Highlight the **"🔴 HIGH RISK ALERT"** and the text: **"Audit Query: [FROM financial-transactions-*...]"**.
-    *   Scroll down to show the detailed reasoning: "Blocked. Total exposure $6,500 exceeds $5,000 limit."
-
-### Phase 6: Orchestration (2:25 - 2:45)
-*   **Audio**: `09_Scenario2_Sanctions`, `10_Scenario2_Result`
-*   **Visual**: 
-    *   **Action**: Use the quick-prompt button: *"Can we onboard Ivan Drago?"*.
-    *   **Visual**: Show the "🕵️‍♀️ Scanning Sanctions..." status.
-    *   **Result**: Show the "🚨 MATCH FOUND" response with the "Action: IMMEDIATE FREEZE" text.
-
-### Phase 7: Tech Stack & Closing (2:45 - 3:00)
-*   **Audio**: `11_Closing`, `12_Adoption`
-*   **Visual**:
-    *   Open the **"🛠️ Architecture"** modal. Scroll through the diagram showing ELSER v2 and the Agent loop.
-    *   End with a shot of the **Citations** window showing the semantic relevance score.
-    *   Fade out on the logo.
+### 📽️ THE CORE STRATEGY
+This isn't a tutorial; it's a **high-stakes pitch**.
+- **Deliberate Movements**: Move your mouse slowly.
+- **Micro-Pauses**: Pause for 2 seconds after every major response so judges can read.
+- **Visual Clues**: Scroll to the code blocks when the audio mentions "queries."
 
 ---
 
-## 🎤 Tips for High-Quality Recording
-1. **Screen Recording**: Use **OBS Studio** or **Loom (Desktop App)** for high bitrate.
-2. **Window Capture**: Don't record your whole desktop. Capture JUST the browser window.
-3. **Cursor**: Turn off "Cursor Highlight" unless you are moving slow and deliberate.
-4. **Post-Processing**: Use **CapCut** or **iMovie** to drop the audio files (`voiceovers/*.mp3`) onto your video track. 
-    *   Apply a "Zoom" effect when you want to show the ES|QL query or the "High Risk" alert.
-    *   Add background music at **-20dB** (very quiet) to make it feel premium. Use a "Modern Corporate" or "Cyber-Tech" track.
+## 🎬 Scene 1: Introduction & The Problem (0:00 - 0:40)
+**Audio Clips**: `01_Intro`, `02_TheProblem`, `03_TheBlindSpot`
+
+1. **Start on JurisLens Home**: Have the page loaded at `https://jurislens.vercel.app/`.
+2. **Slow Scroll**: Slowly scroll to the bottom to show the "JurisLens Inc" copyright.
+3. **The Contrast**: (Optional but Recommended) Briefly switch to a browser tab with a standard ChatGPT screen. Show a query where it says "$4,000 is safe."
+4. **Switch Back**: Return to JurisLens. Hover over the **JurisLens AI** header.
 
 ---
 
-## 🏆 Key Keywords to Mention in Devpost Text
-*   "Context-Driven Agents"
-*   "Zero-Hallucination via Hybrid Search"
-*   "Real-time Enterprise State Enforcement"
-*   "Multi-Tool Orchestration"
+## 🎬 Scene 2: The Technology (0:40 - 1:10)
+**Audio Clips**: `04_Solution`
+
+1. **Badge Hover**: Move your mouse to the left sidebar and hover over the **"Agent Builder Pro"** badge. Let it glow.
+2. **Highlight ELSER**: Point your cursor at the text "ELSER v2" while the audio mentions semantic search.
+3. **Trust & Rigor**: Hover over the red **"High Rigor Mode"** badge in the top right.
+
+---
+
+## 🎬 Scene 3: Demo - Ingest (1:10 - 1:30)
+**Audio Clips**: `05_Demo_Ingest`
+
+1. **File Select**: Click the "Drag PDF Here" box. Select your bank policy PDF.
+2. **The Sync**: Click the **"⚡ Sync to Elastic"** button.
+3. **Watch the Status**: Wait for the "Documents Indexed" checkmark to appear in the sidebar. Do not move the mouse until it succeeds.
+
+---
+
+## 🎬 Scene 4: THE KILLER MOMENT - ES|QL Audit (1:30 - 2:25)
+**Audio Clips**: `06_Demo_AskRule`, `07_Demo_AskAction`, `08_Demo_Result`
+
+1. **The Policy Fetch**: Click the quick-pill query: `What is the limit for Zylaria?`.
+2. **Wait for Logic**: Let the agent status bar pulse ("🤖 Analyzing request...").
+3. **The "Boom" Question**: Type: `My client wants to send $4,000 to Zylaria. Is this allowed?` and hit Enter.
+4. **THE AUDIT TRAIL**:
+   - The response will show **🔴 CRITICAL RISK ALERT**.
+   - **MUST DO**: Scroll down in the chat bubble to find the **ES|QL code block**. Highlight the line starting with `FROM "financial-transactions-*"`.
+   - Hold the mouse there for 3 seconds. This proves the agent is grounded in live data.
+
+---
+
+## 🎬 Scene 5: Multi-Step Orchestration (2:25 - 2:45)
+**Audio Clips**: `09_Scenario2_Sanctions`, `10_Scenario2_Result`
+
+1. **Instant Context Switch**: Click the pill: `Can we onboard Ivan Drago?`.
+2. **Observe Status**: Notice the status bar change to reflect a different tool (sanctions scanning).
+3. **The Rejection**: When the "Access Denied" response appears, hover over the **"Sanctions List"** icon in the Right Engine Panel.
+
+---
+
+## 🎬 Scene 6: The Big Finish (2:45 - 3:00)
+**Audio Clips**: `11_Closing`, `12_Outro`
+
+1. **Architecture Reveal**: Click the large **"🛠️ Architecture Diagram"** button in the bottom right.
+2. **Show the Blueprint**: Let the diagram tab stay open for 4 seconds. Scroll through it quickly.
+3. **Back to App**: Close the tab. 
+4. **The Final Shot**: Scroll to the very top. Highlight the **JurisLens AI** logo. 
+5. **Fade Out**.
+
+---
+
+### 🏆 PRO TIPS FOR THE WIN
+- **Resolution**: Record in 1080p.
+- **Tabs**: Close all irrelevant browser tabs and bookmarks.
+- **Citations**: Always hover over the little citation link in the agent's response to show "Elastic Precision."
+
+**You are ready. Go win that hackathon!**

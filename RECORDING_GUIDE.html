@@ -4,192 +4,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JurisLens Recording Guide | Elastic Agent Builder Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>JurisLens | The Director's Recording Bible</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --elastic-blue: #005571;
             --elastic-teal: #00bfb3;
-            --elastic-yellow: #fec514;
             --elastic-pink: #f04e98;
-            --bg: #f8f9fc;
-            --card: #ffffff;
-            --text: #1a1c21;
+            --action-color: #ff4757;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            line-height: 1.6;
             margin: 0;
-            padding: 40px 20px;
+            padding: 20px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         header {
+            background: linear-gradient(135deg, var(--elastic-blue), #003B4F);
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h1 {
-            color: var(--elastic-blue);
+            margin: 0;
             font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
         .tagline {
             color: var(--elastic-teal);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .checklist {
-            background: var(--card);
-            border-left: 5px solid var(--elastic-teal);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            margin-bottom: 40px;
-        }
-
-        .checklist h2 {
-            margin-top: 0;
-            color: var(--elastic-blue);
-        }
-
-        .checklist ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .checklist li {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .checklist li::before {
-            content: "✓";
-            color: var(--elastic-teal);
-            font-weight: bold;
-            margin-right: 15px;
-            font-size: 1.2rem;
-        }
-
-        .timeline {
-            position: relative;
-            margin-top: 50px;
-        }
-
-        .scene {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease;
-            border: 1px solid #eee;
-        }
-
-        .scene:hover {
-            transform: translateY(-5px);
-        }
-
-        .scene-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .scene-title {
-            color: var(--elastic-blue);
             font-weight: 700;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
+            margin-top: 10px;
         }
 
-        .timestamp {
-            background: var(--elastic-blue);
-            color: white;
+        .director-note {
+            background: rgba(240, 78, 152, 0.1);
+            border-left: 4px solid var(--elastic-pink);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .scene-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .scene-card {
+            background: var(--card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: grid;
+            grid-template-columns: 350px 1fr;
+        }
+
+        .scene-sidebar {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .scene-main {
+            padding: 30px;
+        }
+
+        .badge {
+            display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .meta-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .meta-box {
-            background: #fdfdfd;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #f0f0f0;
-        }
-
-        .meta-label {
-            display: block;
             font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #888;
             font-weight: 700;
-            margin-bottom: 5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
         }
 
-        .meta-value {
-            font-size: 0.95rem;
-            font-weight: 500;
+        .badge-time {
+            background: var(--elastic-blue);
+            color: white;
+        }
+
+        .badge-audio {
+            background: var(--elastic-pink);
+            color: white;
+        }
+
+        .audio-text {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-style: italic;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+        }
+
+        h3 {
+            margin: 0 0 15px 0;
+            color: var(--elastic-teal);
+            font-size: 1.4rem;
+        }
+
+        .step {
+            margin-bottom: 20px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .step-num {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 22px;
+            height: 22px;
+            background: var(--elastic-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: var(--bg);
+        }
+
+        .step-action {
+            font-weight: 700;
             color: var(--text);
         }
 
-        .instruction {
-            margin-top: 15px;
+        .step-detail {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 4px;
         }
 
-        .instruction-label {
-            color: var(--elastic-pink);
-            font-weight: 700;
-            display: inline-block;
-            margin-right: 10px;
+        .pro-tip {
+            margin-top: 20px;
+            background: rgba(0, 191, 179, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            border: 1px dashed var(--elastic-teal);
         }
 
-        .audio-file {
-            font-family: monospace;
-            background: #eee;
+        .wow-moment {
+            border: 2px solid var(--elastic-teal);
+            box-shadow: 0 0 20px rgba(0, 191, 179, 0.2);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.3);
             padding: 2px 6px;
             border-radius: 4px;
-            color: #d63384;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid #ddd;
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .badge-pro {
-            background: linear-gradient(90deg, var(--elastic-blue), var(--elastic-teal));
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            vertical-align: middle;
-            margin-left: 10px;
+            color: var(--elastic-teal);
         }
     </style>
 </head>
@@ -197,167 +183,196 @@
 <body>
     <div class="container">
         <header>
-            <h1>JurisLens <span class="badge-pro">PRO</span></h1>
-            <div class="tagline">3-Minute Video Pitch Recording Guide</div>
-            <p>Synchronized for ELSER v2 & ES|QL Demonstration</p>
+            <h1>JurisLens: The Director's Bible</h1>
+            <div class="tagline">Recording Every Second of the Winning Hackathon Demo</div>
         </header>
 
-        <section class="checklist">
-            <h2>🛠️ Pre-Recording Checklist</h2>
-            <ul>
-                <li><strong>Clear State:</strong> Reset your Elastic index or ensure high-quality test data is ready.
-                </li>
-                <li><strong>Vercel UI:</strong> Open live app at <code>jurislens.vercel.app</code>.</li>
-                <li><strong>Document Ready:</strong> Have <code>goliath_bank_internal_policy.pdf</code> open in a
-                    browser tab.</li>
-                <li><strong>Resolution:</strong> Set recording software to 1080p (1920x1080).</li>
-                <li><strong>Voiceovers:</strong> Ensure all 12 .mp3 files in <code>voiceovers/</code> are generated.
-                </li>
-            </ul>
-        </section>
+        <div class="director-note">
+            <strong>📽️ CORE STRATEGY:</strong> This isn't a tutorial; it's a <strong>high-stakes pitch</strong>. Every
+            mouse movement should be slow and deliberate. If you make a mistake, pause for 5 seconds (to make it easy to
+            cut) and restart the action.
+        </div>
 
-        <div class="timeline">
+        <div class="scene-grid">
+
             <!-- Scene 1 -->
-            <div class="scene">
-                <div class="scene-header">
-                    <span class="scene-title">1. The hook & The intelligence gap</span>
-                    <span class="timestamp">0:00 - 0:40</span>
+            <div class="scene-card">
+                <div class="scene-sidebar">
+                    <span class="badge badge-time">0:00 - 0:40</span>
+                    <span class="badge badge-audio">Audio: 01, 02, 03</span>
+                    <div class="audio-text">"LLMs have an intelligence gap... the chatbot is state-blind."</div>
                 </div>
-                <div class="meta-info">
-                    <div class="meta-box">
-                        <span class="meta-label">Audio Files</span>
-                        <span class="meta-value"><span class="audio-file">01_Intro.mp3</span>, <span
-                                class="audio-file">02_TheProblem.mp3</span></span>
+                <div class="scene-main">
+                    <h3>The Intelligence Gap</h3>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span class="step-action">Start on JurisLens Home</span>
+                        <span class="step-detail">Make sure the screen is clean. Slowly scroll down slightly to show the
+                            bottom copyright.</span>
                     </div>
-                    <div class="meta-box">
-                        <span class="meta-label">Visual Focus</span>
-                        <span class="meta-value">Standard AI Interface vs. JurisLens</span>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span class="step-action">Show the "Standard AI" failure</span>
+                        <span class="step-detail">Switch to a browser tab with ChatGPT. Highlight a fake response where
+                            it says "Yes, a $4000 transfer is safe."</span>
                     </div>
-                </div>
-                <div class="instruction">
-                    <span class="instruction-label">ACTION:</span> Type the Zylaria question into GPT. Show it failing
-                    because it can't see "State". Then open the JurisLens tab.
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <span class="step-action">Highlight the Problem</span>
+                        <span class="step-detail">Overlay or point to a transaction log showing the client ALREADY sent
+                            $2500. This is the "Aha!" moment.</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Scene 2 -->
-            <div class="scene">
-                <div class="scene-header">
-                    <span class="scene-title">2. Introducing ELSER v2</span>
-                    <span class="timestamp">0:40 - 1:10</span>
+            <div class="scene-card">
+                <div class="scene-sidebar">
+                    <span class="badge badge-time">0:40 - 1:10</span>
+                    <span class="badge badge-audio">Audio: 04</span>
+                    <div class="audio-text">"Enter JurisLens Pro... powered by ELSER v2."</div>
                 </div>
-                <div class="meta-info">
-                    <div class="meta-box">
-                        <span class="meta-label">Audio Files</span>
-                        <span class="meta-value"><span class="audio-file">03_TheBlindSpot.mp3</span>, <span
-                                class="audio-file">04_Solution.mp3</span></span>
+                <div class="scene-main">
+                    <h3>The Solution (High-End Tech)</h3>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span class="step-action">The "Glass" Transition</span>
+                        <span class="step-detail">Switch back to JurisLens. The glassmorphism and teal colors should
+                            "pop" here.</span>
                     </div>
-                    <div class="meta-box">
-                        <span class="meta-label">Visual Focus</span>
-                        <span class="meta-value">Elastic Agent Builder Pro Sidebar Badge</span>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span class="step-action">The Pro Badge</span>
+                        <span class="step-detail">Hover your mouse over the "Agent Builder Pro" badge in the left
+                            sidebar. It should glow.</span>
                     </div>
-                </div>
-                <div class="instruction">
-                    <span class="instruction-label">ACTION:</span> Hover over the "ELSER v2" badge. Highlight the
-                    "Semantic Search" capability in the sidebar.
+                    <div class="pro-tip">
+                        <strong>DIRECTOR'S TIP:</strong> Stop your mouse on the text "ELSER v2" for 2 seconds while the
+                        audio mentions it.
+                    </div>
                 </div>
             </div>
 
             <!-- Scene 3 -->
-            <div class="scene">
-                <div class="scene-header">
-                    <span class="scene-title">3. Semantic Ingestion</span>
-                    <span class="timestamp">1:10 - 1:30</span>
+            <div class="scene-card">
+                <div class="scene-sidebar">
+                    <span class="badge badge-time">1:10 - 1:30</span>
+                    <span class="badge badge-audio">Audio: 05</span>
+                    <div class="audio-text">"We ingest a confidential bank policy PDF."</div>
                 </div>
-                <div class="meta-info">
-                    <div class="meta-box">
-                        <span class="meta-label">Audio Files</span>
-                        <span class="meta-value"><span class="audio-file">05_Demo_Ingest.mp3</span></span>
+                <div class="scene-main">
+                    <h3>Knowledge Base Sync</h3>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span class="step-action">The Upload</span>
+                        <span class="step-detail">Click the upload box. Select
+                            <code>goliath_bank_internal_policy.pdf</code>.</span>
                     </div>
-                    <div class="meta-box">
-                        <span class="meta-label">Visual Focus</span>
-                        <span class="meta-value">PDF Upload & Processing Status</span>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span class="step-action">The Elastic Sync</span>
+                        <span class="step-detail">Click the "⚡ Sync to Elastic" button. Watch the loading
+                            spinner.</span>
                     </div>
-                </div>
-                <div class="instruction">
-                    <span class="instruction-label">ACTION:</span> Upload the Goliath Bank Policy PDF. Click "Process &
-                    Index". Slow down to show the "✅ Indexed!" success message.
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <span class="step-action">Confirmation</span>
+                        <span class="step-detail">Wait for the green checkmark/status to appear in the sidebar. This
+                            shows it's indexed!</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Scene 4 -->
-            <div class="scene" style="border: 2px solid var(--elastic-teal);">
-                <div class="scene-header">
-                    <span class="scene-title">4. THE KILLER DEMO: ES|QL Audit</span>
-                    <span class="timestamp">1:30 - 2:25</span>
+            <div class="scene-card wow-moment">
+                <div class="scene-sidebar">
+                    <span class="badge badge-time">1:30 - 2:25</span>
+                    <span class="badge badge-audio">Audio: 06, 07, 08</span>
+                    <div class="audio-text">"BOOM. DENIED. JurisLens executed a live ES|QL query."</div>
                 </div>
-                <div class="meta-info">
-                    <div class="meta-box">
-                        <span class="meta-label">Audio Files</span>
-                        <span class="meta-value"><span class="audio-file">06</span>, <span class="audio-file">07</span>,
-                            <span class="audio-file">08_Demo_Result.mp3</span></span>
+                <div class="scene-main">
+                    <h3>THE KILLER REASONING (ES|QL Audit)</h3>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span class="step-action">Ask the "Safe" question</span>
+                        <span class="step-detail">Click the pill: <code>What is the limit for Zylaria?</code>. Show the
+                            response and the citation link.</span>
                     </div>
-                    <div class="meta-box">
-                        <span class="meta-label">Visual Focus</span>
-                        <span class="meta-value">The ES|QL Query String & High Risk Warning</span>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span class="step-action">Ask the "Killer" question</span>
+                        <span class="step-detail">Type: <code>Send $4,000 to Zylaria -- allowed?</code>. Press
+                            Enter.</span>
                     </div>
-                </div>
-                <div class="instruction">
-                    <span class="instruction-label">ACTION:</span> Ask the $4,000 transfer question. **CRITICAL:** Wait
-                    for the agent to finish. Scroll down to highlight the ES|QL Query Code Block in the chat.
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <span class="step-action">Highlight the Audit Trail</span>
+                        <span class="step-detail">Response appears: **🔴 CRITICAL RISK ALERT**. **SCROLL DOWN** to the
+                            code block showing the ES|QL query.</span>
+                    </div>
+                    <div class="pro-tip" style="border-color: var(--elastic-pink); color: var(--elastic-pink);">
+                        <strong>MUST DO:</strong> The judges MUST see the ES|QL
+                        <code>FROM "financial-transactions-*"</code> block. This is your biggest technical win.
+                    </div>
                 </div>
             </div>
 
             <!-- Scene 5 -->
-            <div class="scene">
-                <div class="scene-header">
-                    <span class="scene-title">5. Intent-Based Orchestration</span>
-                    <span class="timestamp">2:25 - 2:45</span>
+            <div class="scene-card">
+                <div class="scene-sidebar">
+                    <span class="badge badge-time">2:25 - 2:45</span>
+                    <span class="badge badge-audio">Audio: 09, 10</span>
+                    <div class="audio-text">"It instantly switches tools... scans sanctions lists."</div>
                 </div>
-                <div class="meta-info">
-                    <div class="meta-box">
-                        <span class="meta-label">Audio Files</span>
-                        <span class="meta-value"><span class="audio-file">09</span>, <span
-                                class="audio-file">10_Scenario2_Result.mp3</span></span>
+                <div class="scene-main">
+                    <h3>Multi-Step Orchestration</h3>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span class="step-action">Sanctions Trigger</span>
+                        <span class="step-detail">Click the pill: <code>Onboard Ivan Drago?</code>.</span>
                     </div>
-                    <div class="meta-box">
-                        <span class="meta-label">Visual Focus</span>
-                        <span class="meta-value">Tool Switching (Sanctions Checker)</span>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span class="step-action">Visual Proof</span>
+                        <span class="step-detail">Look at the agent status bar. It should say "🕵️‍♀️ Scanning
+                            Sanctions..." before the response.</span>
                     </div>
-                </div>
-                <div class="instruction">
-                    <span class="instruction-label">ACTION:</span> Click the "Onboard Ivan Drago" quick-prompt. Display
-                    the "🕵️‍♀️ Scanning Sanctions..." status visual.
                 </div>
             </div>
 
             <!-- Scene 6 -->
-            <div class="scene">
-                <div class="scene-header">
-                    <span class="scene-title">6. Tech Stack & Architecture</span>
-                    <span class="timestamp">2:45 - 3:00</span>
+            <div class="scene-card">
+                <div class="scene-sidebar">
+                    <span class="badge badge-time">2:45 - 3:00</span>
+                    <span class="badge badge-audio">Audio: 11, 12</span>
+                    <div class="audio-text">"Don't just chat with your data. Enforce it."</div>
                 </div>
-                <div class="meta-info">
-                    <div class="meta-box">
-                        <span class="meta-label">Audio Files</span>
-                        <span class="meta-value"><span class="audio-file">11_Closing.mp3</span>, <span
-                                class="audio-file">12_Adoption.mp3</span></span>
+                <div class="scene-main">
+                    <h3>The Big Finish</h3>
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <span class="step-action">The Blueprint</span>
+                        <span class="step-detail">Click the <strong>"🛠️ Architecture Diagram"</strong> button. Show the
+                            PNG for 3 seconds.</span>
                     </div>
-                    <div class="meta-box">
-                        <span class="meta-label">Visual Focus</span>
-                        <span class="meta-value">Architecture Diagram Modal</span>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <span class="step-action">The Citation Record</span>
+                        <span class="step-detail">Close the diagram. Show the "Citation Confidence" score and the source
+                            link in the last message.</span>
                     </div>
-                </div>
-                <div class="instruction">
-                    <span class="instruction-label">ACTION:</span> Open the "🛠️ Architecture" modal. Show the
-                    Citations/Source links at the end of the chat. Fade to logo.
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <span class="step-action">Fade to Black</span>
+                        <span class="step-detail">Mouse away. Focus on the JurisLens Logo at the top left. Fade
+                            out.</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <footer class="footer">
-            <p>⚖️ JurisLens | Build context-driven agents fast with Elasticsearch</p>
-            <p>© 2026 JurisLens Inc. & Elastic Hackathon Team</p>
+        <footer style="text-align: center; padding: 40px; color: #64748b; font-size: 0.9rem;">
+            © 2026 JurisLens Inc. | Ready for the 🏆
         </footer>
     </div>
 </body>
