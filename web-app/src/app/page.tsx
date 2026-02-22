@@ -225,12 +225,15 @@ export default function JurisLensApp() {
           </button>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-medium">
-          <span>v2.1.0-PRO</span>
-          <div className="flex items-center gap-1 text-emerald-500">
-            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            <span>Elastic Cloud Connected</span>
+        <div className="px-6 py-4 border-t border-gray-100 space-y-2">
+          <div className="flex items-center justify-between text-[10px] text-gray-400 font-medium">
+            <span>v2.1.0-PRO</span>
+            <div className="flex items-center gap-1 text-emerald-500">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+              <span>Elastic Cloud Connected</span>
+            </div>
           </div>
+          <p className="text-[9px] text-gray-400 text-center font-bold">© 2026 JurisLens Inc. · Privacy Policy</p>
         </div>
       </aside>
 
@@ -474,7 +477,7 @@ export default function JurisLensApp() {
               <motion.button
                 whileHover={{ scale: 1.05, rotate: -1 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.open("/Arc_diagram/architecture_pro.html", "_blank")}
+                onClick={() => window.open("/architecture_diagram.png", "_blank")}
                 className="w-full py-4 text-xs font-black uppercase tracking-widest bg-white border-2 border-slate-800 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-2"
               >
                 <Workflow className="w-4 h-4" />
