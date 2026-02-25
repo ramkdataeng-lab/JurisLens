@@ -41,6 +41,7 @@ export default function JurisLensApp() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Restore indexed files from sessionStorage to handle refreshes during demo
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function JurisLensApp() {
     console.log("🚀 Starting ingestion for:", fileToUpload?.name || urlToUpload);
     setIsIngesting(true);
     setIngestStatus("idle");
+    setErrorMessage("");
 
     try {
       const formData = new FormData();
@@ -97,12 +99,12 @@ export default function JurisLensApp() {
       } else {
         console.error("❌ Ingestion failed server-side:", data);
         setIngestStatus("error");
-        // Show error message if available
-        if (data.error) alert(`Indexing Error: ${data.error}`);
+        setErrorMessage(data.error || "Unknown server error");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("❌ Ingestion network error:", err);
       setIngestStatus("error");
+      setErrorMessage(err.message || "Network connection failed");
     } finally {
       setIsIngesting(false);
     }
@@ -241,9 +243,12 @@ export default function JurisLensApp() {
                 />
 
                 {ingestStatus === "error" && (
-                  <div className="flex items-center gap-2 text-rose-600 text-[10px] font-bold px-2">
-                    <AlertCircle className="w-3 h-3" />
-                    <span>Indexing failed. Check PDF format or logs.</span>
+                  <div className="flex flex-col gap-1 text-rose-600 text-[10px] font-bold px-2 py-1 bg-rose-50 rounded-lg border border-rose-100">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-3 h-3" />
+                      <span>Indexing failed.</span>
+                    </div>
+                    <p className="font-medium opacity-80">{errorMessage}</p>
                   </div>
                 )}
 
