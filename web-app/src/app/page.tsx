@@ -42,30 +42,70 @@ export default function JurisLensApp() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState("");
 
+  // Restore indexed files from sessionStorage to handle refreshes during demo
+  useEffect(() => {
+    const saved = sessionStorage.getItem("jurislens_indexed");
+    if (saved) {
+      try { setIndexedFiles(JSON.parse(saved)); } catch (e) { console.error(e); }
+    }
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("jurislens_indexed", JSON.stringify(indexedFiles));
+  }, [indexedFiles]);
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
   const handleIngest = async () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file && !urlInput) return;
+    const fileToUpload = fileRef.current?.files?.[0];
+    const urlToUpload = urlInput;
+
+    if (!fileToUpload && !urlToUpload) {
+      console.warn("⚠️ No file or URL to ingest.");
+      return;
+    }
+
+    console.log("🚀 Starting ingestion for:", fileToUpload?.name || urlToUpload);
     setIsIngesting(true);
     setIngestStatus("idle");
+
     try {
       const formData = new FormData();
-      if (file) formData.append("file", file);
-      if (urlInput) formData.append("url", urlInput);
+      if (fileToUpload) formData.append("file", fileToUpload);
+      if (urlToUpload) formData.append("url", urlToUpload);
+
       const res = await fetch("/api/ingest", { method: "POST", body: formData });
+      const data = await res.json();
+
       if (res.ok) {
+        console.log("✅ Ingestion successful:", data);
         setIngestStatus("success");
-        if (file) setIndexedFiles((p) => [...p, file.name]);
-        if (urlInput) setIndexedFiles((p) => [...p, urlInput]);
+
+        // Add to local list for UI feedback
+        const newItem = fileToUpload?.name || urlToUpload;
+        setIndexedFiles((prev) => {
+          if (prev.includes(newItem)) return prev;
+          return [...prev, newItem];
+        });
+
+        // Clear inputs
         setUrlInput("");
         setFileName("");
         if (fileRef.current) fileRef.current.value = "";
-      } else throw new Error();
-    } catch { setIngestStatus("error"); }
-    finally { setIsIngesting(false); }
+      } else {
+        console.error("❌ Ingestion failed server-side:", data);
+        setIngestStatus("error");
+        // Show error message if available
+        if (data.error) alert(`Indexing Error: ${data.error}`);
+      }
+    } catch (err) {
+      console.error("❌ Ingestion network error:", err);
+      setIngestStatus("error");
+    } finally {
+      setIsIngesting(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent | null, overrideInput?: string) => {

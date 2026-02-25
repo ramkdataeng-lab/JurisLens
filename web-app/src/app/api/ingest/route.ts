@@ -52,54 +52,70 @@ export async function POST(req: NextRequest) {
         }
 
         if (!documents || documents.length === 0) {
-            return NextResponse.json({ error: "No content found" }, { status: 400 });
+            console.error("❌ No documents were loaded from the source.");
+            return NextResponse.json({ error: "No content could be extracted from this document." }, { status: 400 });
         }
 
         const splitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 1200,
-            chunkOverlap: 200,
-            // Optimization for legal text: try to split on sections or double newlines first
+            chunkSize: 1000,
+            chunkOverlap: 100,
             separators: ["\n\n", "\n", " ", ""],
         });
 
         // Ensure every doc has a source and page in metadata for Citations
+        const sourceName = file ? file.name : (url || "Web Source");
         const docs = (await splitter.splitDocuments(documents)).map((doc, idx) => {
-            doc.metadata = {
-                ...doc.metadata,
-                source: file ? file.name : (url || "Web Source"),
-                chunk_id: idx,
-                ingested_at: new Date().toISOString()
+            return {
+                ...doc,
+                metadata: {
+                    ...doc.metadata,
+                    source: sourceName,
+                    chunk_id: idx,
+                    ingested_at: new Date().toISOString()
+                }
             };
-            return doc;
         });
 
         const elasticCloudId = process.env.ELASTIC_CLOUD_ID;
         const elasticApiKey = process.env.ELASTIC_API_KEY;
 
         if (!elasticCloudId || !elasticApiKey) {
-            return NextResponse.json({ error: "Elasticsearch not configured" }, { status: 500 });
+            console.error("❌ Elasticsearch environment variables are missing.");
+            return NextResponse.json({ error: "Vercel Environment Variables (ELASTIC_CLOUD_ID/API_KEY) are missing." }, { status: 500 });
         }
 
-        const client = new Client({
-            cloud: { id: elasticCloudId },
-            auth: { apiKey: elasticApiKey },
-        });
+        try {
+            const client = new Client({
+                cloud: { id: elasticCloudId },
+                auth: { apiKey: elasticApiKey },
+            });
 
-        // Initialize Vector Store
-        const embeddings = new OpenAIEmbeddings();
-        const vectorStore = new ElasticVectorSearch(embeddings, {
-            client,
-            indexName: "jurislens_docs",
-        });
+            // Index the documents
+            console.log(`📦 Indexing ${docs.length} semantic chunks to Elasticsearch index 'jurislens_docs'...`);
 
-        // Index the documents
-        console.log(`📦 Indexing ${docs.length} semantic chunks to Elasticsearch...`);
-        await vectorStore.addDocuments(docs);
+            // Handle indexing manually to ensure we see errors
+            for (const doc of docs) {
+                await client.index({
+                    index: "jurislens_docs",
+                    document: {
+                        content: doc.pageContent,
+                        metadata: doc.metadata,
+                        text: doc.pageContent, // Fallback field
+                        "ml.tokens": {} // Placeholder for ELSER compatibility if needed later
+                    }
+                });
+            }
 
-        return NextResponse.json({ success: true, count: docs.length });
+            console.log("✅ Indexing Complete!");
+            return NextResponse.json({ success: true, count: docs.length, source: sourceName });
+
+        } catch (esError: any) {
+            console.error("❌ Elasticsearch Indexing Error:", esError);
+            return NextResponse.json({ error: `Elasticsearch Error: ${esError.message}` }, { status: 500 });
+        }
 
     } catch (e: any) {
-        console.error(e);
-        return NextResponse.json({ error: e.message }, { status: 500 });
+        console.error("❌ Critical Ingestion Failure:", e);
+        return NextResponse.json({ error: e.message || "Unknown server error during ingestion." }, { status: 500 });
     }
 }

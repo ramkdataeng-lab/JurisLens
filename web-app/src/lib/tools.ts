@@ -28,50 +28,69 @@ export const searchRegulationsTool = new DynamicStructuredTool({
             console.log(`🔍 Executing ELSER v2 Semantic Search for: "${query}"`);
 
             // Upgraded to use ELSER v2 (text_expansion)
-            // This aligns with Elastic Agent Builder's preference for semantic retrieval over simple keyword match
-            const response = await client.search({
-                index: "jurislens_docs",
-                size: 3,
-                query: {
-                    bool: {
-                        should: [
-                            {
-                                text_expansion: {
-                                    "ml.tokens": {
-                                        model_id: ".elser_model_2",
-                                        model_text: query
+            // This aligns with Elastic Agent Builder's preference for semantic retrieval
+            let response;
+            try {
+                response = await client.search({
+                    index: "jurislens_docs",
+                    size: 3,
+                    query: {
+                        bool: {
+                            should: [
+                                {
+                                    text_expansion: {
+                                        "ml.tokens": {
+                                            model_id: ".elser_model_2",
+                                            model_text: query
+                                        }
+                                    }
+                                },
+                                {
+                                    match: {
+                                        content: {
+                                            query: query,
+                                            boost: 0.5
+                                        }
                                     }
                                 }
-                            },
-                            {
-                                match: {
-                                    content: {
-                                        query: query,
-                                        boost: 0.5
-                                    }
-                                }
-                            }
-                        ]
+                            ]
+                        }
                     }
-                }
-            });
+                });
+            } catch (searchError: any) {
+                console.warn("⚠️ ELSER Semantic Search failed (is the model started?), falling back to standard search...", searchError.message);
+                // FALLBACK: Standard keyword and fuzzy search if ELSER model isn't active
+                response = await client.search({
+                    index: "jurislens_docs",
+                    size: 3,
+                    query: {
+                        match: {
+                            content: {
+                                query: query,
+                                fuzziness: "AUTO"
+                            }
+                        }
+                    }
+                });
+            }
 
             const hits = response.hits.hits;
 
             if (hits.length === 0) {
-                return "No relevant regulations found inside the Elastic Knowledge Base.";
+                return "The Knowledge Base is currently empty or contains no relevant matches for this query. Please ingest more regulations (PDFs or URLs) using the Sidebar.";
             }
 
             return hits.map((hit: any) => {
-                const source = hit._source.metadata?.source || "Unknown";
-                const page = hit._source.metadata?.page ? ` (Page ${parseInt(hit._source.metadata.page) + 1})` : "";
+                const metadata = hit._source.metadata || {};
+                const source = metadata.source || "Unknown Document";
+                const page = metadata.page ? ` (Page ${parseInt(metadata.page) + 1})` : "";
                 const score = hit._score;
-                return `[Source: ${source}${page}] [Semantic Relevance: ${score.toFixed(4)}]\n${hit._source.content}`;
+                return `[Source: ${source}${page}] [Elastic Relevance: ${score.toFixed(4)}]\n${hit._source.content || hit._source.text || "No content found."}`;
             }).join("\n\n");
 
-        } catch (error) {
-            console.error("ELSER Search Failed:", error);
-            return "Error searching regulations using Elastic Semantic Search.";
+        } catch (error: any) {
+            console.error("Search Tool Critical Failure:", error);
+            return `Error searching regulations: ${error.message}. Ensure Elasticsearch is healthy.`;
         }
     },
 });
