@@ -1,4 +1,4 @@
-# JurisLens: The Autonomous Compliance Agent
+# JurisLens: The Autonomous Compliance Agent (LIVE)
 
 ## 1. Description (~400 Words)
 
