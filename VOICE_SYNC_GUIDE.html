@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JurisLens | Visual Recording + Audio Sync Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00bfb3;
+            --bg: #0b0f19;
+            --text: #ffffff;
+            --accent: #f04e98;
+            --subtext: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 40px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-weight: 900;
+            margin-bottom: 50px;
+        }
+
+        .clip-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .clip-header {
+            background: rgba(0, 191, 179, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 191, 179, 0.2);
+        }
+
+        .clip-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .visual-inst {
+            padding: 20px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .visual-inst strong {
+            color: var(--accent);
+        }
+
+        .audio-text {
+            padding: 20px;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.2);
+            font-style: italic;
+            color: #e2e8f0;
+        }
+
+        .sync-warning {
+            background: rgba(240, 78, 152, 0.1);
+            color: var(--accent);
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>JurisLens: Visual & Audio Sync Bible</h1>
+        <p style="text-align: center; color: var(--subtext);">Use this to record your screen while playing the generated
+            MP3s from <code>voiceovers/</code></p>
+
+        <!-- Clip 1 & 2 & 3 Combined Intro -->
+        <div class="clip-box">
+            <div class="clip-header">
+                <span class="clip-id">01_Intro + 02_TheProblem + 03_TheBlindSpot</span>
+                <span>~40 Seconds</span>
+            </div>
+            <div class="visual-inst">
+                <strong>VISUAL:</strong> Start on JurisLens landing page. Slowly scroll down to show the full UI.
+                When the audio mentions "state-blind," hover your mouse over the chat area specifically.
+            </div>
+            <div class="audio-text">
+                "Web search engines are great at reading, but terrible at enforcing... I can feed a 50-page banking
+                regulation PDF into a standard chatbot... It doesn't know that this specific client already transferred
+                $2,500 this morning."
+            </div>
+        </div>
+
+        <!-- Clip 4 -->
+        <div class="clip-box">
+            <div class="clip-header">
+                <span class="clip-id">04_Solution</span>
+                <span>~30 Seconds</span>
+            </div>
+            <div class="visual-inst">
+                <strong>VISUAL:</strong> Hover mouse over the <strong>"Agent Builder Pro"</strong> badge in the left
+                sidebar.
+                Move cursor to the <strong>"ELSER v2"</strong> text when mentioned.
+            </div>
+            <div class="audio-text">
+                "Enter JurisLens Pro. Built on Elastic Agent Builder, it uses ELSER v2—Elastic's latest semantic
+                model... It doesn't just match keywords; it understands the law."
+            </div>
+        </div>
+
+        <!-- Clip 5 -->
+        <div class="clip-box">
+            <div class="clip-header">
+                <span class="clip-id">05_Demo_Ingest</span>
+                <span>~20 Seconds</span>
+            </div>
+            <div class="visual-inst">
+                <strong>VISUAL:</strong> Drag and Drop the PDF into the upload zone. Click <strong>"⚡ Sync to
+                    Elastic"</strong>.
+                Wait for the success checkmark.
+            </div>
+            <div class="audio-text">
+                "Watch this. We ingest a confidential bank policy PDF. JurisLens indexes it instantly into
+                Elasticsearch, optimized for high-precision semantic retrieval."
+            </div>
+        </div>
+
+        <!-- Clip 6, 7, 8 -->
+        <div class="clip-box" style="border: 2px solid var(--primary);">
+            <div class="sync-warning">⭐ KILLER MOMENT ⭐</div>
+            <div class="clip-header">
+                <span class="clip-id">06_Demo_AskRule + 07_Demo_AskAction + 08_Demo_Result</span>
+                <span>~55 Seconds</span>
+            </div>
+            <div class="visual-inst">
+                <strong>VISUAL (06):</strong> Click the <code>What is the limit for Zylaria?</code> pill.<br>
+                <strong>VISUAL (07):</strong> Type <code>Send $4,000 to Zylaria -- allowed?</code> and hit Enter.<br>
+                <strong>VISUAL (08):</strong> When <strong>DENIED</strong> appears, scroll down to the <strong>ES|QL
+                    Code Block</strong> and highlight the query.
+            </div>
+            <div class="audio-text">
+                "First, we verify the rule... Now, the real test... Boom. DENIED. JurisLens executed a live ES|QL query
+                against our transaction logs."
+            </div>
+        </div>
+
+        <!-- Clip 9, 10 -->
+        <div class="clip-box">
+            <div class="clip-header">
+                <span class="clip-id">09_Scenario2_Sanctions + 10_Scenario2_Result</span>
+                <span>~20 Seconds</span>
+            </div>
+            <div class="visual-inst">
+                <strong>VISUAL:</strong> Click the <code>Onboard Ivan Drago?</code> pill.
+                Point at the <strong>"Active Engine"</strong> panel on the right.
+            </div>
+            <div class="audio-text">
+                "But it's not just about money... If I try to onboard a new client named Ivan Drago... It instantly
+                switches tools, scans global sanctions lists, and flags him as a high-risk entity."
+            </div>
+        </div>
+
+        <!-- Clip 11, 12 -->
+        <div class="clip-box">
+            <div class="clip-header">
+                <span class="clip-id">11_Closing + 12_Adoption</span>
+                <span>~45 Seconds</span>
+            </div>
+            <div class="visual-inst">
+                <strong>VISUAL:</strong> Click the <strong>"🛠️ Architecture Diagram"</strong> button to open the PNG.
+                Close it and finish on the JurisLens Logo.
+            </div>
+            <div class="audio-text">
+                "By leveraging Elasticsearch as our backbone... Adoption is seamless. Visit jurislens dot vercel dot app
+                to see it in action. Don't just chat with your data. Enforce it. This is JurisLens."
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

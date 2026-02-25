@@ -200,6 +200,13 @@ export default function JurisLensApp() {
                   onChange={(e) => setUrlInput(e.target.value)}
                 />
 
+                {ingestStatus === "error" && (
+                  <div className="flex items-center gap-2 text-rose-600 text-[10px] font-bold px-2">
+                    <AlertCircle className="w-3 h-3" />
+                    <span>Indexing failed. Check PDF format or logs.</span>
+                  </div>
+                )}
+
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

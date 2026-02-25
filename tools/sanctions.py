@@ -25,7 +25,8 @@ def check_sanctions_tool(name: str) -> str:
     
     if name_upper in sanctioned_db:
         record = sanctioned_db[name_upper]
-        return (f"🚨 MATCH FOUND: '{name}' is a Sanctioned Entity.\n"
+        return (f"**🔴 CRITICAL RISK ALERT**\n\n"
+                f"🚨 MATCH FOUND: '{name}' is a Sanctioned Entity.\n"
                 f"Source: {record['list']}\n"
                 f"ID: {record['id']}\n"
                 f"Reason: {record['reason']}\n"

@@ -7,6 +7,7 @@ import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import fs from "fs";
 import path from "path";
+import os from "os";
 
 export const runtime = "nodejs";
 
@@ -26,18 +27,25 @@ export async function POST(req: NextRequest) {
         if (file) {
             const arrayBuffer = await file.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            const tempDir = "/tmp";
-            if (!fs.existsSync(tempDir)) {
-                fs.mkdirSync(tempDir);
-            }
-            const tempPath = path.join(tempDir, file.name);
+
+            // Use OS-specific temp directory
+            const tempDir = os.tmpdir();
+            const tempPath = path.join(tempDir, `jurislens_${Date.now()}_${file.name}`);
 
             fs.writeFileSync(tempPath, buffer);
 
-            const loader = new PDFLoader(tempPath);
-            documents = await loader.load();
-
-            fs.unlinkSync(tempPath);
+            try {
+                // PDFLoader in web/Node environments needs to be configured or pdf-parse must be present
+                const loader = new PDFLoader(tempPath, {
+                    splitPages: true,
+                });
+                documents = await loader.load();
+            } finally {
+                // Always clean up temp file
+                if (fs.existsSync(tempPath)) {
+                    fs.unlinkSync(tempPath);
+                }
+            }
         } else if (url) {
             const loader = new CheerioWebBaseLoader(url);
             documents = await loader.load();

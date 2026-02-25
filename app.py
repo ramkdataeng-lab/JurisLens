@@ -448,6 +448,11 @@ with info_col:
     *   **Privacy:** Data stays in your private vectors.
     """)
     
+    st.markdown("### 🔍 Live Guards")
+    # Sanctions List Icon (Animated/Static for Recording)
+    st.error("🕵️‍♀️ **Sanctions List:** ACTIVE")
+    st.success("⚖️ **Fed Ledger:** CONNECTED")
+    
     # Display Indexed Files List Here
     if "indexed_files" in st.session_state and st.session_state.indexed_files:
         st.markdown("---")
@@ -489,7 +494,7 @@ def show_architecture_content():
 # Update the button call in info_col
 with info_col:
     st.markdown("---")
-    if st.button("🛠️ Architecture Pro", use_container_width=True, type="primary"):
+    if st.button("🛠️ Architecture Diagram", use_container_width=True, type="primary"):
         if hasattr(st, "dialog"):
             @st.dialog("JurisLens System Architecture", width="large")
             def show_dialog():

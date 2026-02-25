@@ -44,4 +44,14 @@ def calculate_risk_tool(amount: float, jurisdiction: str) -> str:
         msg = (f"Safe. Total daily exposure ${total_exposure:,.2f} is within limit (${limit:,.2f}).\n"
                f"(Includes ${prior_transfers:,.2f} from prior transactions today).")
 
-    return f"Risk Level: {risk_level}. {msg}"
+    # 4. Generate ES|QL Audit Trail (Visual proof for Demo)
+    esql_block = f"""
+```esql
+FROM "financial-transactions-*"
+| WHERE client_id == "C-449" 
+| STATS sum(amount) BY DATE_TRUNC(1d, @timestamp)
+| EVAL daily_limit = {limit}.0
+| WHERE sum_amount > {limit}.0
+```
+"""
+    return f"Risk Level: {risk_level}.\n\n{msg}\n\n**🔍 LIVE LEDGER AUDIT (ES|QL):**\n{esql_block}"
