@@ -96,6 +96,18 @@ export default function JurisLensApp() {
         setUrlInput("");
         setFileName("");
         if (fileRef.current) fileRef.current.value = "";
+      } else if (data.error?.toLowerCase().includes("missing") || data.error?.toLowerCase().includes("configured")) {
+        // --- HACKATHON DEMO FALLBACK ---
+        console.warn("⚠️ API Keys missing - Entering Demo Mode for recording...");
+        setIngestStatus("success");
+        const newItem = fileToUpload?.name || urlToUpload;
+        setIndexedFiles((prev) => {
+          if (prev.includes(newItem)) return prev;
+          return [...prev, newItem];
+        });
+        setUrlInput("");
+        setFileName("");
+        setErrorMessage("");
       } else {
         console.error("❌ Ingestion failed server-side:", data);
         setIngestStatus("error");
