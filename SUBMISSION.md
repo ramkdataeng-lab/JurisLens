@@ -1,33 +1,45 @@
-# JurisLens: The Autonomous Compliance Agent (LIVE)
+# JurisLens: The Autonomous Compliance Agent
 
-## 1. Description (~400 Words)
-
-**Problem Solved**
-Global financial institutions face billions of dollars in fines annually due to non-compliance with Anti-Money Laundering (AML) and Know Your Customer (KYC) regulations. These regulations (like the US Patriot Act, EU’s MiCA, or Singapore’s AML Act) are vast, complex, and constantly changing. Compliance officers spend countless hours manually CTRL+F searching through thousands of PDF pages, often missing critical nuances. Standard chatbots fail here because they hallucinate laws or cannot access private, up-to-the-minute regulatory documents.
-
-**The Solution: JurisLens**
-JurisLens is an **Autonomous Compliance Agent** designed to bridge the gap between legal rigor and AI speed. Unlike a passive chatbot, JurisLens is an "Agent" equipped with specialized tools. It can:
-1.  **Search & Retrieve:** actively query a secure Knowledge Base of regulations using Semantic Search to find the exact legal clauses relevant to a user's question.
-2.  **Calculate Risk:** switch modes to perform deterministic financial risk assessments based on transaction parameters.
-3.  **Cite Sources:** provide answers grounded in the actual text of the regulations, reducing liability.
-
-**Features Used & Architecture**
-*   **Elasticsearch Vector Store:** The backbone of our Knowledge Base. We use Elastic to store vector embeddings of regulatory PDFs. This allows for semantic retrieval (finding "money laundering rules" even if the text says "illicit financing countermeasures").
-*   **LangChain Agents:** We utilize the `OpenAI Functions Agent` architecture. This allows the LLM to "decide" whether to search the database, calculate a number, or just chat, depending on the user intent.
-*   **RAG Pipeline:** A complete ingestion pipeline that chunks patents/laws, embeds them using OpenAI models, and indexes them into Elastic Cloud.
-
-**3 Features We Liked & Challenges**
-1.  **Elasticsearch Speed:** The retrieval speed for vector search was phenomenal. Even with dense legal texts, Elastic returned relevant chunks in milliseconds, making the chat feel instantaneous.
-2.  **Hybrid Tool Use:** We loved how the Agent could seamlessly combine data from a PDF search with a Python-based risk calculator in a single conversation turn. It felt like "Reasoning," not just text prediction.
-3.  *(Challenge)*: **Prompt Engineering for Tools.** Getting the agent to consistently call the `RiskCalculator` with the correct JSON schema (e.g., separating "50k" into `50000`) was tricky, but moving to Pydantic-based structured tools solved it.
+### **1. Summary**
+JurisLens is an autonomous compliance guardian that bridges the gap between static legal rigor and dynamic enterprise state. Unlike passive RAG systems, JurisLens uses **ELSER v2** for deep semantic understanding and **ES|QL** for real-time risk auditing, effectively "enforcing" regulations rather than just reading them.
 
 ---
 
-## 2. Demonstration Video
-*(Paste your YouTube/Loom link here)*
+### **2. The Problem**
+Global financial institutions face billions in fines because standard AI "hallucinates" laws or lacks access to the real-time "state" of a client's transactions. A chatbot might know the daily transfer limit is $5,000 (static rule), but it doesn't know the client has already sent $4,500 this morning (dynamic state). This **"State-Blindness"** is a multi-billion-dollar liability.
 
-## 3. Code Repository
-https://github.com/ramkdataeng-lab/JurisLens
+---
 
-## 4. Social Post
-"Just built JurisLens for the @elastic AI Hackathon! 🚀 It's an autonomous agent that uses #Elasticsearch vector search to navigate complex financial regulations in seconds. Goodbye manual compliance checks! #AI #RAG #LangChain #Python"
+### **3. The Solution: JurisLens**
+JurisLens is an autonomous agent built on the **Elastic Agent Builder** philosophy. It doesn't just "chat"; it orchestrates a suite of specialized tools:
+*   **Semantic Law Search:** Powered by **ELSER v2**, it understands the *intent* of complex statutes.
+*   **Stateful Risk Auditing:** It generates and executes **ES|QL (Elasticsearch Query Language)** against live transaction indices.
+*   **Multi-Domain Sanctions:** It switches tools to scan global watchlists for sanctioned entities.
+
+---
+
+### **4. Technology Stack**
+*   **Search Engine:** Elasticsearch Cloud (Hybrid Vector + Keyword Search).
+*   **ML Model:** ELSER v2 (`text_expansion`) for high-precision legal retrieval.
+*   **Logic Engine:** ES|QL for deterministic, stateful transaction analysis.
+*   **AI Core:** LangChain + OpenAI GPT-4 Omni.
+*   **Frontend:** Next.js 15 (App Router).
+
+---
+
+### **5. Three Features We Love**
+1.  **ELSER v2 Precision:** Superior context understanding for dense legal PDFs.
+2.  **ES|QL Tool Use:** Grounding AI reasoning in deterministic database queries.
+3.  **Hybrid Reasoning:** Combining unstructured PDF rules with structured database state.
+
+---
+
+### **6. Links**
+*   **Live App:** [https://jurislens.vercel.app/](https://jurislens.vercel.app/)
+*   **GitHub Repo:** [https://github.com/ramkdataeng-lab/JurisLens](https://github.com/ramkdataeng-lab/JurisLens)
+*   **Demo Video:** [PLACEHOLDER]
+
+---
+
+### **7. Social Post**
+"Just submitted **JurisLens** to the @elastic AI Hackathon! 🚀 It’s an autonomous agent using #Elasticsearch #ELSERv2 and #ESQL to navigate complex financial regs and enforce real-time compliance. #RAG #LangChain #GenAI"

@@ -122,6 +122,8 @@ export default function JurisLensApp() {
     }
   };
 
+  const [isDemo, setIsDemo] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent | null, overrideInput?: string) => {
     if (e) e.preventDefault();
     const text = overrideInput ?? input;
@@ -151,6 +153,84 @@ export default function JurisLensApp() {
       setProgress(100);
       setTimeout(() => { setIsLoading(false); setProgress(0); setAgentStatus(""); }, 500);
     }
+  };
+
+  const startDemo = async () => {
+    if (isDemo) return;
+    setIsDemo(true);
+    setMessages([messages[0]]);
+    setIndexedFiles([]);
+
+    const playAudio = (src: string) => {
+      return new Promise((resolve) => {
+        const audio = new Audio(`/voiceovers/${src}`);
+        audio.onended = resolve;
+        audio.play().catch(e => {
+          console.error("Audio playback failed:", e);
+          resolve(null);
+        });
+      });
+    };
+
+    // 1. Intro
+    await playAudio("01_Intro.mp3");
+
+    // 2. The Problem (Skip the ChatGPT overlay for the in-app demo as it's meant for the recorded video)
+    // But we'll wait for the duration anyway
+    await playAudio("02_TheProblem.mp3");
+    await playAudio("03_TheBlindSpot.mp3");
+    await playAudio("04_Solution.mp3");
+
+    // 5. Ingest
+    setFileName("goliath_bank_internal_policy.pdf");
+    const ingestAudio = new Audio("/voiceovers/05_Demo_Ingest.mp3");
+    ingestAudio.play();
+    await new Promise(r => setTimeout(r, 2000));
+    await handleIngest();
+    await new Promise(r => ingestAudio.ended ? r(null) : ingestAudio.onended = () => r(null));
+
+    // 6. Ask Rule
+    const askRuleAudio = new Audio("/voiceovers/06_Demo_AskRule.mp3");
+    askRuleAudio.play();
+    const q1 = "What is the limit for Zylaria?";
+    for (let i = 0; i <= q1.length; i++) {
+      setInput(q1.slice(0, i));
+      await new Promise(r => setTimeout(r, 50));
+    }
+    await handleSubmit(null, q1);
+    await new Promise(r => askRuleAudio.ended ? r(null) : askRuleAudio.onended = () => r(null));
+
+    // 7. Ask Action
+    const askActionAudio = new Audio("/voiceovers/07_Demo_AskAction.mp3");
+    askActionAudio.play();
+    const q2 = "My client wants to send $4,000 to Zylaria. Is this allowed?";
+    for (let i = 0; i <= q2.length; i++) {
+      setInput(q2.slice(0, i));
+      await new Promise(r => setTimeout(r, 40));
+    }
+    await handleSubmit(null, q2);
+    await new Promise(r => askActionAudio.ended ? r(null) : askActionAudio.onended = () => r(null));
+
+    // 8. Result
+    await playAudio("08_Demo_Result.mp3");
+
+    // 9. Scenario 2
+    const sanctionsAudio = new Audio("/voiceovers/09_Scenario2_Sanctions.mp3");
+    sanctionsAudio.play();
+    const q3 = "Can we onboard Ivan Drago?";
+    for (let i = 0; i <= q3.length; i++) {
+      setInput(q3.slice(0, i));
+      await new Promise(r => setTimeout(r, 50));
+    }
+    await handleSubmit(null, q3);
+    await new Promise(r => sanctionsAudio.ended ? r(null) : sanctionsAudio.onended = () => r(null));
+
+    // 10. Result 2 & Closing
+    await playAudio("10_Scenario2_Result.mp3");
+    await playAudio("11_Closing.mp3");
+    await playAudio("12_Adoption.mp3");
+
+    setIsDemo(false);
   };
 
   const enrichText = (text: string) => {
@@ -268,7 +348,7 @@ export default function JurisLensApp() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleIngest}
-                  disabled={isIngesting}
+                  disabled={isIngesting || isDemo}
                   className={cn(
                     "w-full py-3 rounded-xl text-xs font-bold text-white shadow-xl transition-all",
                     isIngesting ? "bg-slate-400" : "bg-gradient-to-r from-[#00bfb3] to-[#009e94] hover:shadow-teal-200"
@@ -276,6 +356,23 @@ export default function JurisLensApp() {
                 >
                   {isIngesting ? "Indexing Documents..." : "⚡ Sync to Elastic"}
                 </motion.button>
+
+                <div className="pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={startDemo}
+                    disabled={isDemo || isIngesting}
+                    className={cn(
+                      "w-full py-3 rounded-xl text-xs font-bold transition-all border-2",
+                      isDemo
+                        ? "bg-teal-50 border-teal-200 text-teal-600 animate-pulse"
+                        : "bg-white border-[#005571] text-[#005571] hover:bg-teal-50"
+                    )}
+                  >
+                    {isDemo ? "🚀 Demo in Progress..." : "🎬 Play Interactive Demo"}
+                  </motion.button>
+                </div>
               </div>
             </div>
           </div>
@@ -427,14 +524,15 @@ export default function JurisLensApp() {
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Analyze compliance risk for client..."
+                    placeholder={isDemo ? "Demo playing..." : "Analyze compliance risk for client..."}
                     className="flex-1 text-sm focus:outline-none bg-transparent"
+                    disabled={isLoading || isDemo}
                   />
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     type="submit"
-                    disabled={isLoading || !input.trim()}
+                    disabled={isLoading || isDemo || !input.trim()}
                     className="bg-gradient-to-br from-[#005571] to-[#003B4F] text-white w-12 h-12 rounded-2xl flex items-center justify-center font-bold shadow-lg disabled:opacity-40"
                   >
                     <ChevronRight className="w-6 h-6" />
@@ -449,7 +547,8 @@ export default function JurisLensApp() {
                   { q: "Onboard Ivan Drago?", icon: <Sparkles className="w-3 h-3" /> }
                 ].map((item) => (
                   <button key={item.q} onClick={() => handleSubmit(null, item.q)}
-                    className="group text-[10px] font-bold text-slate-400 bg-white border border-gray-100 rounded-xl px-4 py-2 hover:bg-slate-50 hover:text-slate-800 hover:border-teal-200 hover:shadow-md transition-all flex items-center gap-2">
+                    disabled={isLoading || isDemo}
+                    className="group text-[10px] font-bold text-slate-400 bg-white border border-gray-100 rounded-xl px-4 py-2 hover:bg-slate-50 hover:text-slate-800 hover:border-teal-200 hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50">
                     <span className="text-teal-400 group-hover:scale-110 transition-transform">{item.icon}</span>
                     {item.q}
                   </button>

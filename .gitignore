@@ -21,3 +21,8 @@ voiceovers/*.mp3
 
 # Screenshots
 screenshot/
+
+# Video
+*.mp4
+*.webm
+test_videos/
